@@ -88,6 +88,10 @@ El contrato `Product` está en `frontend/src/app/models/product.model.ts`. `Prod
 
 El store inicializa `agrigo.products` en `localStorage` con los datos de `frontend/src/app/data/product-seed.ts` solo cuando aún no existe esa clave. Los cambios se guardan antes de actualizar el Signal. Los componentes que publiquen productos deben usar este store y no crear otra lista o clave de almacenamiento independiente. Si el valor guardado no es JSON válido o no cumple el modelo `Product`, el store informa el error en vez de reemplazarlo silenciosamente.
 
+### Publicaciones del productor
+
+La pantalla `frontend/src/app/producer-publications/` se abre en `/mis-publicaciones` y utiliza el `ProductStore` compartido para crear, editar y eliminar productos. En esta demostración, “Mis publicaciones” muestra los productos cuyo `producerName` es `Héctor Riascos`, incluido el producto semilla asignado a ese productor. El formulario mantiene ese nombre fijo porque el proyecto no implementa cuentas ni autenticación. Los campos del producto se validan antes de guardar y las acciones actualizan el mismo catálogo que consulta Marketplace.
+
 Los contratos iniciales `CartItem` y `PurchaseOrder` están en `frontend/src/app/models/`; las siguientes etapas pueden ampliarlos mediante sus propios PR si acuerdan cambios con el equipo.
 
 ## Datos y limitaciones
