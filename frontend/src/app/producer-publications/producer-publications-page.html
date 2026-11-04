@@ -1,0 +1,271 @@
+<section class="publications-page">
+  <header class="page-heading">
+    <div>
+      <p class="eyebrow">Espacio del productor</p>
+      <h1>Mis publicaciones</h1>
+      <p class="page-description">
+        Administra los productos publicados por {{ currentProducerName }}.
+      </p>
+    </div>
+    <span class="publication-count">{{ producerProducts.length }} productos</span>
+  </header>
+
+  <p class="notice" role="note">
+    Los cambios se guardan en el almacenamiento local de este navegador.
+  </p>
+
+  <p class="feedback success" role="status" *ngIf="feedback()">{{ feedback() }}</p>
+  <p class="feedback error" role="alert" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+
+  <section class="form-panel" aria-labelledby="form-title">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">{{ editingProductId() ? 'Editar publicación' : 'Nueva publicación' }}</p>
+        <h2 id="form-title">
+          {{ editingProductId() ? 'Actualiza tu producto' : 'Publica un producto' }}
+        </h2>
+      </div>
+    </div>
+
+    <form [formGroup]="productForm" (ngSubmit)="saveProduct()" novalidate>
+      <div class="form-grid">
+        <div class="field">
+          <label for="product-name">Nombre del producto</label>
+          <input id="product-name" type="text" formControlName="name" maxlength="80" />
+          <small
+            class="field-error"
+            *ngIf="
+              productForm.controls.name.touched && productForm.controls.name.hasError('required')
+            "
+          >
+            El nombre es obligatorio.
+          </small>
+          <small
+            class="field-error"
+            *ngIf="
+              productForm.controls.name.touched && productForm.controls.name.hasError('minlength')
+            "
+          >
+            Escribe al menos 3 caracteres.
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="product-category">Categoría</label>
+          <select id="product-category" formControlName="category">
+            <option value="">Selecciona una categoría</option>
+            <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+          </select>
+          <small
+            class="field-error"
+            *ngIf="
+              productForm.controls.category.touched &&
+              productForm.controls.category.hasError('required')
+            "
+          >
+            Selecciona una categoría.
+          </small>
+        </div>
+
+        <div class="field field-wide">
+          <label for="product-description">Descripción</label>
+          <textarea
+            id="product-description"
+            formControlName="description"
+            rows="3"
+            maxlength="300"
+          ></textarea>
+          <small
+            class="field-error"
+            *ngIf="
+              productForm.controls.description.touched &&
+              productForm.controls.description.hasError('required')
+            "
+          >
+            La descripción es obligatoria.
+          </small>
+          <small
+            class="field-error"
+            *ngIf="
+              productForm.controls.description.touched &&
+              productForm.controls.description.hasError('minlength')
+            "
+          >
+            Escribe al menos 8 caracteres.
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="product-price">Precio (COP)</label>
+          <input id="product-price" type="number" formControlName="price" min="0.01" step="100" />
+          <small
+            class="field-error"
+            *ngIf="
+              productForm.controls.price.touched && productForm.controls.price.hasError('required')
+            "
+          >
+            El precio es obligatorio.
+          </small>
+          <small
+            class="field-error"
+            *ngIf="productForm.controls.price.touched && productForm.controls.price.hasError('min')"
+          >
+            El precio debe ser mayor que cero.
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="product-unit">Unidad de venta</label>
+          <input
+            id="product-unit"
+            type="text"
+            formControlName="unit"
+            placeholder="kg, unidad, libra..."
+          />
+          <small
+            class="field-error"
+            *ngIf="
+              productForm.controls.unit.touched && productForm.controls.unit.hasError('required')
+            "
+          >
+            La unidad es obligatoria.
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="product-stock">Cantidad disponible</label>
+          <input id="product-stock" type="number" formControlName="stock" min="0" step="1" />
+          <small
+            class="field-error"
+            *ngIf="
+              productForm.controls.stock.touched && productForm.controls.stock.hasError('required')
+            "
+          >
+            La cantidad disponible es obligatoria.
+          </small>
+          <small
+            class="field-error"
+            *ngIf="productForm.controls.stock.touched && productForm.controls.stock.hasError('min')"
+          >
+            La cantidad no puede ser negativa.
+          </small>
+          <small
+            class="field-error"
+            *ngIf="
+              productForm.controls.stock.touched &&
+              productForm.controls.stock.hasError('wholeNumber')
+            "
+          >
+            Ingresa una cantidad entera.
+          </small>
+        </div>
+
+        <div class="field">
+          <label for="product-producer">Productor</label>
+          <input id="product-producer" type="text" formControlName="producerName" readonly />
+        </div>
+
+        <div class="field">
+          <label for="product-location">Ubicación</label>
+          <input id="product-location" type="text" formControlName="location" maxlength="100" />
+          <small
+            class="field-error"
+            *ngIf="
+              productForm.controls.location.touched &&
+              productForm.controls.location.hasError('required')
+            "
+          >
+            La ubicación es obligatoria.
+          </small>
+        </div>
+
+        <div class="field field-wide">
+          <label for="product-image">URL de imagen</label>
+          <input
+            id="product-image"
+            type="url"
+            formControlName="imageUrl"
+            placeholder="https://..."
+          />
+          <small
+            class="field-error"
+            *ngIf="
+              productForm.controls.imageUrl.touched &&
+              productForm.controls.imageUrl.hasError('required')
+            "
+          >
+            La URL de imagen es obligatoria.
+          </small>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="primary-button" type="submit">
+          {{ editingProductId() ? 'Guardar cambios' : 'Publicar producto' }}
+        </button>
+        <button
+          class="secondary-button"
+          type="button"
+          *ngIf="editingProductId()"
+          (click)="cancelEdit()"
+        >
+          Cancelar edición
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <section class="publications-section" aria-labelledby="publications-title">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Tu catálogo</p>
+        <h2 id="publications-title">Productos publicados</h2>
+      </div>
+    </div>
+
+    <div class="publication-list" *ngIf="producerProducts.length > 0; else emptyPublications">
+      <article class="publication-card" *ngFor="let product of producerProducts">
+        <img
+          *ngIf="product.imageUrl; else productWithoutImage"
+          [src]="product.imageUrl"
+          [alt]="product.name"
+        />
+        <ng-template #productWithoutImage>
+          <div class="image-placeholder" aria-hidden="true">AgriGo</div>
+        </ng-template>
+
+        <div class="product-details">
+          <span class="category">{{ product.category }}</span>
+          <h3>{{ product.name }}</h3>
+          <p>{{ product.description }}</p>
+          <p class="product-meta">
+            {{ product.price | currency: 'COP' : 'symbol-narrow' : '1.0-0' }} / {{ product.unit }} ·
+            {{ product.stock }} disponibles
+          </p>
+          <p class="product-location">{{ product.location }}</p>
+        </div>
+
+        <div class="card-actions">
+          <button class="secondary-button" type="button" (click)="editProduct(product)">
+            Editar
+          </button>
+          <button
+            class="delete-button"
+            type="button"
+            [attr.aria-label]="'Eliminar ' + product.name"
+            (click)="deleteProduct(product)"
+          >
+            Eliminar
+          </button>
+        </div>
+      </article>
+    </div>
+
+    <ng-template #emptyPublications>
+      <div class="empty-state">
+        <h3>Aún no tienes publicaciones</h3>
+        <p>Completa el formulario para agregar tu primer producto al Marketplace.</p>
+      </div>
+    </ng-template>
+  </section>
+</section>
