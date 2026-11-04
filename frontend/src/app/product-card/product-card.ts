@@ -1,5 +1,5 @@
 import { CurrencyPipe, NgIf } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Product } from '../models/product.model';
 
 @Component({
@@ -10,4 +10,9 @@ import { Product } from '../models/product.model';
 })
 export class ProductCard {
   @Input({ required: true }) product!: Product;
+  @Output() productSelected = new EventEmitter<string>();
+
+  openDetails(): void {
+    this.productSelected.emit(this.product.id);
+  }
 }

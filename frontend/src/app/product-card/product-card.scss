@@ -93,3 +93,19 @@
   color: var(--color-warning);
   font-weight: 700;
 }
+
+.details-button {
+  background: var(--color-forest);
+  border: 0;
+  border-radius: 0.55rem;
+  color: #fff;
+  font-weight: 700;
+  margin-top: 1rem;
+  min-height: 2.6rem;
+  padding: 0.6rem 1rem;
+  width: 100%;
+}
+
+.details-button:hover {
+  background: var(--color-green);
+}
