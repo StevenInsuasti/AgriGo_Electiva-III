@@ -57,6 +57,48 @@ describe('ProducerPublicationsPage', () => {
     expect(page.producerProducts).toHaveLength(1);
   });
 
+  it('rejects whitespace-only text and descriptions shorter than eight trimmed characters', () => {
+    const fixture = TestBed.createComponent(ProducerPublicationsPage);
+    const page = fixture.componentInstance;
+    page.productForm.patchValue({
+      name: '   ',
+      description: '   corto   ',
+      category: 'Frutas',
+      price: 6000,
+      unit: ' kg ',
+      stock: 12,
+      location: '   ',
+      imageUrl: 'https://example.com/fresa.jpg',
+    });
+
+    page.saveProduct();
+
+    expect(page.productForm.controls.name.hasError('required')).toBe(true);
+    expect(page.productForm.controls.description.hasError('minlength')).toBe(true);
+    expect(page.productForm.controls.location.hasError('required')).toBe(true);
+    expect(page.producerProducts).toHaveLength(1);
+  });
+
+  it('rejects malformed or non-http image URLs', () => {
+    const fixture = TestBed.createComponent(ProducerPublicationsPage);
+    const page = fixture.componentInstance;
+    page.productForm.patchValue({
+      name: 'Fresa campesina',
+      description: 'Fresas frescas cosechadas esta semana.',
+      category: 'Frutas',
+      price: 6000,
+      unit: 'kg',
+      stock: 12,
+      location: 'La Ceja, Antioquia',
+      imageUrl: 'javascript:alert(1)',
+    });
+
+    page.saveProduct();
+
+    expect(page.productForm.controls.imageUrl.hasError('url')).toBe(true);
+    expect(page.producerProducts).toHaveLength(1);
+  });
+
   it('creates a product in the shared store and persists it', () => {
     const fixture = TestBed.createComponent(ProducerPublicationsPage);
     const page = fixture.componentInstance;

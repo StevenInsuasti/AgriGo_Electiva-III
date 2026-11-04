@@ -14,6 +14,33 @@ import { ProductStore } from '../services/product.store';
 const CURRENT_PRODUCER_NAME = 'Héctor Riascos';
 const PRODUCT_CATEGORIES = ['Frutas', 'Verduras', 'Tubérculos', 'Granos'];
 
+const trimmedRequiredValidator: ValidatorFn = (
+  control: AbstractControl,
+): ValidationErrors | null =>
+  typeof control.value === 'string' && control.value.trim().length > 0 ? null : { required: true };
+
+function trimmedMinLengthValidator(minLength: number): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = typeof control.value === 'string' ? control.value.trim() : '';
+    return value.length >= minLength
+      ? null
+      : { minlength: { requiredLength: minLength, actualLength: value.length } };
+  };
+}
+
+const httpUrlValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+  if (typeof control.value !== 'string' || control.value.trim().length === 0) {
+    return null;
+  }
+
+  try {
+    const url = new URL(control.value.trim());
+    return url.protocol === 'http:' || url.protocol === 'https:' ? null : { url: true };
+  } catch {
+    return { url: true };
+  }
+};
+
 const wholeNumberValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const value = control.value;
   return value === null || Number.isInteger(Number(value)) ? null : { wholeNumber: true };
@@ -35,15 +62,15 @@ export class ProducerPublicationsPage {
   readonly errorMessage = signal('');
 
   readonly productForm = this.formBuilder.group({
-    name: ['', [Validators.required, Validators.minLength(3)]],
-    description: ['', [Validators.required, Validators.minLength(8)]],
+    name: ['', [trimmedRequiredValidator, trimmedMinLengthValidator(3)]],
+    description: ['', [trimmedRequiredValidator, trimmedMinLengthValidator(8)]],
     category: ['', Validators.required],
     price: [null as number | null, [Validators.required, Validators.min(0.01)]],
-    unit: ['kg', Validators.required],
+    unit: ['kg', trimmedRequiredValidator],
     stock: [null as number | null, [Validators.required, Validators.min(0), wholeNumberValidator]],
-    producerName: [CURRENT_PRODUCER_NAME, Validators.required],
-    location: ['', Validators.required],
-    imageUrl: ['', Validators.required],
+    producerName: [CURRENT_PRODUCER_NAME, trimmedRequiredValidator],
+    location: ['', trimmedRequiredValidator],
+    imageUrl: ['', [trimmedRequiredValidator, httpUrlValidator]],
   });
 
   get producerProducts(): Product[] {

@@ -196,6 +196,14 @@
           >
             La URL de imagen es obligatoria.
           </small>
+          <small
+            class="field-error"
+            *ngIf="
+              productForm.controls.imageUrl.touched && productForm.controls.imageUrl.hasError('url')
+            "
+          >
+            Ingresa una URL válida que comience con http:// o https://.
+          </small>
         </div>
       </div>
 
