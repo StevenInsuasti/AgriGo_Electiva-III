@@ -23,6 +23,17 @@ describe('CartPage', () => {
     expect((fixture.nativeElement as HTMLElement).textContent).toContain('Tu carrito está vacío');
   });
 
+  it('offers checkout from a non-empty cart', () => {
+    TestBed.inject(CartStore).addProduct('seed-papa');
+    const fixture = TestBed.createComponent(CartPage);
+    fixture.detectChanges();
+
+    const checkoutLink = (fixture.nativeElement as HTMLElement).querySelector(
+      'a[routerLink="/checkout"]',
+    );
+    expect(checkoutLink?.textContent).toContain('Continuar al checkout');
+  });
+
   it('renders cart totals and supports increasing, decreasing, and removing a product', () => {
     const cartStore = TestBed.inject(CartStore);
     cartStore.addProduct('seed-papa');

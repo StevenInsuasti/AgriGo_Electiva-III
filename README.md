@@ -102,7 +102,11 @@ La pantalla del carrito está en `/carrito`. `CartStore`, en `frontend/src/app/s
 
 El detalle de producto permite agregar unidades al carrito. El enlace superior muestra el total de unidades; desde el carrito se pueden aumentar, disminuir o quitar productos. `CartStore.clear()` permite que la siguiente etapa vacíe el carrito al confirmar un pedido.
 
-El contrato `PurchaseOrder` está en `frontend/src/app/models/purchase-order.model.ts` y podrá ampliarse en la etapa de checkout mediante su propio PR, de acuerdo con los datos que requiera el equipo.
+### Checkout y pedidos
+
+La pantalla `/checkout` valida nombre, teléfono, dirección y preferencia de pago demostrativa antes de confirmar. Antes de guardar, vuelve a comparar las cantidades del carrito con el stock vigente en `ProductStore`. `OrderStore`, en `frontend/src/app/services/order.store.ts`, persiste pedidos bajo `agrigo.orders`; al confirmar guarda una copia del nombre, unidad y precio de cada producto para que el historial no dependa de cambios futuros del catálogo. El carrito se vacía después de guardar el pedido. No se descuenta inventario, procesa pagos ni coordina despachos.
+
+El contrato `PurchaseOrder` de `frontend/src/app/models/purchase-order.model.ts` incluye los datos de contacto y los detalles de precio registrados por producto para las pantallas de confirmación e historial de la siguiente etapa.
 
 ## Datos y limitaciones
 

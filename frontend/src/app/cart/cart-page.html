@@ -66,8 +66,7 @@
         <strong>{{ cartStore.total() | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
       </p>
       <p class="demo-note">Pedido de demostración. No se realizará ningún cobro ni despacho.</p>
-      <button class="checkout-button" type="button" disabled>Continuar al checkout</button>
-      <small>El checkout estará disponible en la siguiente parte del proyecto.</small>
+      <a class="checkout-button" routerLink="/checkout">Continuar al checkout</a>
     </aside>
   </div>
 
