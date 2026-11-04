@@ -1,0 +1,22 @@
+<article class="product-card">
+  <div class="product-image">
+    <img [src]="product.imageUrl" [alt]="product.name" loading="lazy" />
+    <span class="category">{{ product.category }}</span>
+  </div>
+
+  <div class="product-content">
+    <div class="product-heading">
+      <h2>{{ product.name }}</h2>
+      <span class="price">{{ product.price | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</span>
+    </div>
+    <p class="description">{{ product.description }}</p>
+    <p class="product-meta">Por {{ product.producerName }} · {{ product.location }}</p>
+    <div class="product-footer">
+      <span>Precio por {{ product.unit }}</span>
+      <span [class.low-stock]="product.stock < 5" *ngIf="product.stock > 0">
+        {{ product.stock }} {{ product.unit }} disponibles
+      </span>
+      <span class="low-stock" *ngIf="product.stock === 0">Agotado</span>
+    </div>
+  </div>
+</article>

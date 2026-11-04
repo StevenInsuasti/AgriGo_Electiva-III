@@ -1,0 +1,69 @@
+.intro {
+  background:
+    radial-gradient(ellipse at 85% 20%, rgb(200 222 173 / 75%), transparent 35%),
+    linear-gradient(120deg, #eaf3e4, #f8f7ed);
+  border-radius: 1.5rem;
+  margin-bottom: 2.5rem;
+  padding: clamp(2rem, 6vw, 4rem);
+}
+
+.intro h1 {
+  color: var(--color-forest);
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  line-height: 1.12;
+  margin: 0.4rem 0 0.8rem;
+  max-width: 720px;
+}
+
+.intro > p:last-child {
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  margin-bottom: 0;
+}
+
+.eyebrow {
+  color: var(--color-green);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+}
+
+.section-heading {
+  align-items: end;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 1.2rem;
+}
+
+.section-heading h2 {
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+.product-count {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+}
+
+.product-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+}
+
+.empty-state {
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-card);
+  color: var(--color-text-muted);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.empty-state h2 {
+  color: var(--color-text);
+  margin-top: 0;
+}
