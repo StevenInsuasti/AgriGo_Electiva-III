@@ -1,0 +1,25 @@
+<header class="site-header">
+  <a class="brand" routerLink="/marketplace" aria-label="AgriGo, ir al Marketplace">
+    <span class="brand-mark" aria-hidden="true">A</span>
+    <span>AgriGo</span>
+  </a>
+
+  <nav aria-label="Navegación principal">
+    <a routerLink="/marketplace" routerLinkActive="active" ariaCurrentWhenActive="page">
+      Marketplace
+    </a>
+  </nav>
+
+  <span class="demo-label">Proyecto académico</span>
+</header>
+
+<main class="page-shell">
+  <aside class="local-data-notice" role="note">
+    <strong>Demostración local:</strong>
+    los datos se guardan en este navegador. No se realizan cobros ni despachos.
+  </aside>
+
+  <router-outlet></router-outlet>
+</main>
+
+<footer class="site-footer">AgriGo · Mercado agrícola de demostración</footer>

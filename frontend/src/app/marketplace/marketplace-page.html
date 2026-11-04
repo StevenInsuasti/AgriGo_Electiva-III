@@ -1,0 +1,27 @@
+<section class="marketplace">
+  <div class="intro">
+    <p class="eyebrow">Del campo a tu mesa</p>
+    <h1>Productos frescos, directo de productores locales</h1>
+    <p>Conoce los alimentos de nuestra comunidad campesina.</p>
+  </div>
+
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Nuestra cosecha</p>
+      <h2>Productos de demostración</h2>
+    </div>
+    <span class="product-count">{{ productStore.products().length }} productos</span>
+  </div>
+
+  <div class="product-grid" *ngIf="productStore.products().length > 0; else emptyCatalog">
+    <app-product-card *ngFor="let product of productStore.products()" [product]="product">
+    </app-product-card>
+  </div>
+
+  <ng-template #emptyCatalog>
+    <div class="empty-state">
+      <h2>Aún no hay productos publicados</h2>
+      <p>Cuando se agreguen productos, aparecerán aquí.</p>
+    </div>
+  </ng-template>
+</section>

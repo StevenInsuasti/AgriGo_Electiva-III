@@ -60,6 +60,36 @@ La interfaz debe indicar de forma visible que los datos son locales y que no se 
 
 Se deben aplicar las temáticas de Angular y TypeScript demostradas en el proyecto de clase `book-angular-6b`. Ese proyecto de referencia y la carpeta de mockups son material de consulta local y no forman parte de este repositorio.
 
+## Desarrollo local
+
+La aplicación Angular está en `frontend/`. Requiere Node.js compatible con la versión de Angular del proyecto y npm.
+
+```powershell
+cd frontend
+npm install
+npm start
+```
+
+La aplicación se sirve en `http://localhost:4200/`. Para compilar y ejecutar las pruebas:
+
+```powershell
+npm run build
+npm test -- --watch=false
+```
+
+### Estado compartido de productos
+
+El contrato `Product` está en `frontend/src/app/models/product.model.ts`. `ProductStore`, en `frontend/src/app/services/product.store.ts`, es la fuente única de productos:
+
+- Leer el catálogo: `productStore.products()` (Signal de solo lectura).
+- Agregar: `productStore.addProduct(product)`.
+- Editar: `productStore.updateProduct(product)`.
+- Eliminar: `productStore.deleteProduct(productId)`.
+
+El store inicializa `agrigo.products` en `localStorage` con los datos de `frontend/src/app/data/product-seed.ts` solo cuando aún no existe esa clave. Los cambios se guardan antes de actualizar el Signal. Los componentes que publiquen productos deben usar este store y no crear otra lista o clave de almacenamiento independiente. Si el valor guardado no es JSON válido o no cumple el modelo `Product`, el store informa el error en vez de reemplazarlo silenciosamente.
+
+Los contratos iniciales `CartItem` y `PurchaseOrder` están en `frontend/src/app/models/`; las siguientes etapas pueden ampliarlos mediante sus propios PR si acuerdan cambios con el equipo.
+
 ## Datos y limitaciones
 
 - Los productos iniciales son datos semilla de demostración.
