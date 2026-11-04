@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { CartPage } from './cart/cart-page';
+import { CheckoutPage } from './checkout/checkout-page';
 import { MarketplacePage } from './marketplace/marketplace-page';
 import { ProductDetailPage } from './product-detail/product-detail-page';
 import { ProducerPublicationsPage } from './producer-publications/producer-publications-page';
@@ -21,6 +22,10 @@ export const routes: Routes = [
   {
     path: 'carrito',
     component: CartPage,
+  },
+  {
+    path: 'checkout',
+    component: CheckoutPage,
   },
   {
     path: 'producto/:id',

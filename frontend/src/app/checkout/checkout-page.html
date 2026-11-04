@@ -1,0 +1,178 @@
+<section class="checkout-page">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Último paso</p>
+      <h1>Finalizar pedido</h1>
+      <p>Ingresa tus datos para guardar este pedido de demostración.</p>
+    </div>
+    <a class="back-link" routerLink="/carrito">Volver al carrito</a>
+  </div>
+
+  <div class="success-panel" role="status" *ngIf="createdOrder() as order">
+    <p class="eyebrow">Pedido guardado</p>
+    <h2>¡Gracias, {{ order.customerName }}!</h2>
+    <p>
+      Tu pedido de demostración <strong>{{ order.id }}</strong> se guardó en este navegador.
+    </p>
+    <p>
+      Total registrado:
+      <strong>{{ order.total | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+    </p>
+    <p>No se realizó ningún cobro, pago ni despacho.</p>
+    <p class="error-banner" role="alert" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+    <a class="primary-button" routerLink="/marketplace">Volver al Marketplace</a>
+  </div>
+
+  <ng-container *ngIf="!createdOrder()">
+    <p class="error-banner" role="alert" *ngIf="errorMessage()">{{ errorMessage() }}</p>
+
+    <div class="empty-checkout" *ngIf="cartIsEmpty; else checkoutContent">
+      <h2>No hay productos para confirmar</h2>
+      <p>Agrega productos al carrito antes de finalizar un pedido.</p>
+      <a class="primary-button" routerLink="/marketplace">Ir al Marketplace</a>
+    </div>
+
+    <ng-template #checkoutContent>
+      <div class="checkout-layout">
+        <form
+          class="checkout-form"
+          [formGroup]="checkoutForm"
+          (ngSubmit)="confirmOrder()"
+          novalidate
+        >
+          <section class="form-section" aria-labelledby="delivery-title">
+            <p class="eyebrow">Datos de entrega</p>
+            <h2 id="delivery-title">¿A quién y dónde se entrega?</h2>
+
+            <div class="field">
+              <label for="customer-name">Nombre completo</label>
+              <input
+                id="customer-name"
+                type="text"
+                formControlName="customerName"
+                autocomplete="name"
+              />
+              <small
+                class="field-error"
+                *ngIf="
+                  checkoutForm.controls.customerName.touched &&
+                  checkoutForm.controls.customerName.hasError('required')
+                "
+              >
+                Ingresa tu nombre.
+              </small>
+              <small
+                class="field-error"
+                *ngIf="
+                  checkoutForm.controls.customerName.touched &&
+                  !checkoutForm.controls.customerName.hasError('required') &&
+                  checkoutForm.controls.customerName.hasError('minlength')
+                "
+              >
+                El nombre debe tener al menos 3 caracteres.
+              </small>
+            </div>
+
+            <div class="field">
+              <label for="customer-phone">Teléfono</label>
+              <input
+                id="customer-phone"
+                type="tel"
+                formControlName="phone"
+                autocomplete="tel"
+                placeholder="Ej. 300 123 4567"
+              />
+              <small
+                class="field-error"
+                *ngIf="
+                  checkoutForm.controls.phone.touched &&
+                  checkoutForm.controls.phone.hasError('required')
+                "
+              >
+                Ingresa un teléfono de contacto.
+              </small>
+              <small
+                class="field-error"
+                *ngIf="
+                  checkoutForm.controls.phone.touched &&
+                  checkoutForm.controls.phone.hasError('phone')
+                "
+              >
+                El teléfono debe contener entre 7 y 15 dígitos.
+              </small>
+            </div>
+
+            <div class="field">
+              <label for="delivery-address">Dirección</label>
+              <textarea
+                id="delivery-address"
+                formControlName="deliveryAddress"
+                autocomplete="street-address"
+                rows="3"
+                placeholder="Calle, carrera, número y complemento"
+              ></textarea>
+              <small
+                class="field-error"
+                *ngIf="
+                  checkoutForm.controls.deliveryAddress.touched &&
+                  checkoutForm.controls.deliveryAddress.hasError('required')
+                "
+              >
+                Ingresa una dirección.
+              </small>
+              <small
+                class="field-error"
+                *ngIf="
+                  checkoutForm.controls.deliveryAddress.touched &&
+                  !checkoutForm.controls.deliveryAddress.hasError('required') &&
+                  checkoutForm.controls.deliveryAddress.hasError('minlength')
+                "
+              >
+                La dirección debe tener al menos 5 caracteres.
+              </small>
+            </div>
+          </section>
+
+          <section class="form-section" aria-labelledby="payment-title">
+            <p class="eyebrow">Preferencia de pago</p>
+            <h2 id="payment-title">Solo para la demostración</h2>
+            <label class="field" for="payment-preference">
+              <span>Elige una preferencia</span>
+              <select id="payment-preference" formControlName="paymentPreference">
+                <option *ngFor="let option of paymentOptions" [value]="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </label>
+            <p class="demo-note">
+              No ingreses datos financieros. Esta selección no procesa pagos ni agenda un despacho.
+            </p>
+          </section>
+
+          <button class="primary-button confirm-button" type="submit">
+            Confirmar pedido de demostración
+          </button>
+        </form>
+
+        <aside class="order-summary" aria-label="Resumen del pedido">
+          <h2>Resumen del pedido</h2>
+          <article class="summary-item" *ngFor="let line of cartStore.lines()">
+            <div>
+              <strong>{{ line.product.name }}</strong>
+              <p>
+                {{ line.quantity }} {{ line.product.unit }} ×
+                {{ line.product.price | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+              </p>
+            </div>
+            <strong>{{ line.subtotal | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+          </article>
+          <p class="total-row">
+            <span>Total simulado</span>
+            <strong>{{ cartStore.total() | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+          </p>
+          <p class="demo-note">No se realizará ningún cobro ni despacho real.</p>
+        </aside>
+      </div>
+    </ng-template>
+  </ng-container>
+</section>
