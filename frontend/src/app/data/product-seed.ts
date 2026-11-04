@@ -35,7 +35,7 @@ export const PRODUCT_SEED: Product[] = [
     price: 5200,
     unit: 'kg',
     stock: 42,
-    producerName: 'Héctor Ramírez',
+    producerName: 'Héctor Riascos',
     location: 'Marinilla, Antioquia',
     imageUrl:
       'https://images.unsplash.com/photo-1518977676601-b53f82aba655?auto=format&fit=crop&w=800&q=80',

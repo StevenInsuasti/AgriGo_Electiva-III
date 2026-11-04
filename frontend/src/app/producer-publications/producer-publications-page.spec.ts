@@ -85,10 +85,10 @@ describe('ProducerPublicationsPage', () => {
     const fixture = TestBed.createComponent(ProducerPublicationsPage);
     const page = fixture.componentInstance;
     const store = TestBed.inject(ProductStore);
-    const product = PRODUCT_SEED.find((item) => item.producerName === 'Héctor Ramírez');
+    const product = PRODUCT_SEED.find((item) => item.producerName === 'Héctor Riascos');
 
     if (!product) {
-      throw new Error('La semilla debe incluir una publicación de Héctor Ramírez.');
+      throw new Error('La semilla debe incluir una publicación de Héctor Riascos.');
     }
 
     page.editProduct(product);

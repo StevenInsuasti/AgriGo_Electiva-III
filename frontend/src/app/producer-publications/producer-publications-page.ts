@@ -11,7 +11,7 @@ import {
 import { Product } from '../models/product.model';
 import { ProductStore } from '../services/product.store';
 
-const CURRENT_PRODUCER_NAME = 'Héctor Ramírez';
+const CURRENT_PRODUCER_NAME = 'Héctor Riascos';
 const PRODUCT_CATEGORIES = ['Frutas', 'Verduras', 'Tubérculos', 'Granos'];
 
 const wholeNumberValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
