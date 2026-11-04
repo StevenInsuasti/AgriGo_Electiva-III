@@ -5,23 +5,66 @@
     <p>Conoce los alimentos de nuestra comunidad campesina.</p>
   </div>
 
+  <section class="catalog-filters" aria-label="Buscar y filtrar productos">
+    <label class="search-field" for="catalog-search">
+      <span>Buscar por producto o productor</span>
+      <input
+        id="catalog-search"
+        type="search"
+        placeholder="Ej. tomate o Héctor Riascos"
+        [value]="searchTerm()"
+        (input)="updateSearch($event)"
+      />
+    </label>
+
+    <label class="category-field" for="catalog-category">
+      <span>Filtrar por categoría</span>
+      <select id="catalog-category" [value]="selectedCategory()" (change)="updateCategory($event)">
+        <option value="">Todas las categorías</option>
+        <option *ngFor="let category of categories()" [value]="category">{{ category }}</option>
+      </select>
+    </label>
+
+    <button
+      class="clear-filters"
+      type="button"
+      *ngIf="searchTerm() || selectedCategory()"
+      (click)="clearFilters()"
+    >
+      Limpiar filtros
+    </button>
+  </section>
+
   <div class="section-heading">
     <div>
       <p class="eyebrow">Nuestra cosecha</p>
-      <h2>Productos de demostración</h2>
+      <h2>Productos disponibles</h2>
     </div>
-    <span class="product-count">{{ productStore.products().length }} productos</span>
+    <span class="product-count">{{ filteredProducts().length }} productos</span>
   </div>
 
-  <div class="product-grid" *ngIf="productStore.products().length > 0; else emptyCatalog">
-    <app-product-card *ngFor="let product of productStore.products()" [product]="product">
+  <div class="product-grid" *ngIf="filteredProducts().length > 0; else emptyCatalog">
+    <app-product-card
+      *ngFor="let product of filteredProducts()"
+      [product]="product"
+      (productSelected)="openProduct($event)"
+    >
     </app-product-card>
   </div>
 
   <ng-template #emptyCatalog>
     <div class="empty-state">
-      <h2>Aún no hay productos publicados</h2>
-      <p>Cuando se agreguen productos, aparecerán aquí.</p>
+      <ng-container *ngIf="productStore.products().length === 0; else noSearchResults">
+        <h2>Aún no hay productos publicados</h2>
+        <p>Cuando se agreguen productos, aparecerán aquí.</p>
+      </ng-container>
+      <ng-template #noSearchResults>
+        <h2>No encontramos productos</h2>
+        <p>Prueba con otro nombre, productor o categoría.</p>
+        <button class="clear-filters" type="button" (click)="clearFilters()">
+          Limpiar filtros
+        </button>
+      </ng-template>
     </div>
   </ng-template>
 </section>

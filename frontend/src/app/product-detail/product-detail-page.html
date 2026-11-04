@@ -1,0 +1,48 @@
+<section class="detail-page" *ngIf="product() as item; else missingProduct">
+  <a class="back-link" routerLink="/marketplace">← Volver al Marketplace</a>
+
+  <article class="product-detail">
+    <img class="product-image" [src]="item.imageUrl" [alt]="item.name" />
+
+    <div class="product-information">
+      <span class="category">{{ item.category }}</span>
+      <h1>{{ item.name }}</h1>
+      <p class="description">{{ item.description }}</p>
+
+      <p class="price">
+        {{ item.price | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+        <span>/ {{ item.unit }}</span>
+      </p>
+
+      <p class="availability" *ngIf="item.stock > 0; else outOfStock">
+        {{ item.stock }} {{ item.unit }} disponibles
+      </p>
+      <ng-template #outOfStock>
+        <p class="availability out-of-stock">Producto agotado</p>
+      </ng-template>
+
+      <dl class="product-facts">
+        <div>
+          <dt>Productor</dt>
+          <dd>{{ item.producerName }}</dd>
+        </div>
+        <div>
+          <dt>Ubicación</dt>
+          <dd>{{ item.location }}</dd>
+        </div>
+        <div>
+          <dt>Categoría</dt>
+          <dd>{{ item.category }}</dd>
+        </div>
+      </dl>
+    </div>
+  </article>
+</section>
+
+<ng-template #missingProduct>
+  <section class="missing-product">
+    <h1>No encontramos este producto</h1>
+    <p>Es posible que la publicación ya no esté disponible.</p>
+    <a class="back-link" routerLink="/marketplace">Volver al Marketplace</a>
+  </section>
+</ng-template>
