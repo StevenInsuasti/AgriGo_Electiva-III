@@ -11,6 +11,9 @@
     <a routerLink="/mis-publicaciones" routerLinkActive="active" ariaCurrentWhenActive="page">
       Mis publicaciones
     </a>
+    <a routerLink="/carrito" routerLinkActive="active" ariaCurrentWhenActive="page">
+      Carrito <span class="cart-count">{{ cartStore.totalQuantity() }}</span>
+    </a>
   </nav>
 
   <span class="demo-label">Proyecto académico</span>

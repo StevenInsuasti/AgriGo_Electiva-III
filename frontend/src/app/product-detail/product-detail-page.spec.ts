@@ -38,4 +38,14 @@ describe('ProductDetailPage', () => {
     expect(compiled.textContent).toContain('No encontramos este producto');
     expect(compiled.querySelector('a[routerLink="/marketplace"]')).not.toBeNull();
   });
+
+  it('adds an available product to the persisted cart', async () => {
+    const compiled = await createPage('seed-papa');
+
+    compiled.querySelector<HTMLButtonElement>('.add-to-cart-button')?.click();
+
+    expect(JSON.parse(window.localStorage.getItem('agrigo.cart') ?? 'null')).toEqual([
+      { productId: 'seed-papa', quantity: 1 },
+    ]);
+  });
 });

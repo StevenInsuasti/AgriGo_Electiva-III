@@ -28,4 +28,13 @@ describe('App', () => {
       'No se realizan cobros ni despachos',
     );
   });
+
+  it('shows the cart link and the current number of units', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.componentInstance.cartStore.addProduct('seed-papa');
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('a[routerLink="/carrito"]')?.textContent).toContain('1');
+  });
 });

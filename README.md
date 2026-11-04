@@ -96,7 +96,13 @@ La pantalla `frontend/src/app/producer-publications/` se abre en `/mis-publicaci
 
 El Marketplace consulta `ProductStore`, permite buscar por nombre de producto o productor y filtrar por categoría. Cada tarjeta recibe un `Product` con `@Input` y emite el identificador seleccionado mediante `@Output`/`EventEmitter`. El detalle está disponible en `/producto/:id` y muestra los datos del mismo producto guardado en el store.
 
-Los contratos iniciales `CartItem` y `PurchaseOrder` están en `frontend/src/app/models/`; las siguientes etapas pueden ampliarlos mediante sus propios PR si acuerdan cambios con el equipo.
+### Carrito
+
+La pantalla del carrito está en `/carrito`. `CartStore`, en `frontend/src/app/services/cart.store.ts`, conserva únicamente el identificador y la cantidad de cada producto con el contrato `CartItem`, y consulta `ProductStore` para obtener los datos y el stock vigentes. La clave `agrigo.cart` guarda el carrito en el navegador. El estado se carga al iniciar, limita las cantidades al stock disponible y calcula subtotales y total. El checkout permanece deshabilitado hasta que se integre su etapa.
+
+El detalle de producto permite agregar unidades al carrito. El enlace superior muestra el total de unidades; desde el carrito se pueden aumentar, disminuir o quitar productos. `CartStore.clear()` permite que la siguiente etapa vacíe el carrito al confirmar un pedido.
+
+El contrato `PurchaseOrder` está en `frontend/src/app/models/purchase-order.model.ts` y podrá ampliarse en la etapa de checkout mediante su propio PR, de acuerdo con los datos que requiera el equipo.
 
 ## Datos y limitaciones
 

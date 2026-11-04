@@ -47,6 +47,18 @@ nav a.active {
   color: var(--color-forest);
 }
 
+.cart-count {
+  background: var(--color-forest);
+  border-radius: 999px;
+  color: white;
+  display: inline-block;
+  font-size: 0.75rem;
+  line-height: 1.5rem;
+  margin-left: 0.25rem;
+  min-width: 1.5rem;
+  text-align: center;
+}
+
 .demo-label {
   color: var(--color-text-muted);
   font-size: 0.9rem;
