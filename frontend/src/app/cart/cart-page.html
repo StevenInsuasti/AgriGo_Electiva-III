@@ -1,0 +1,82 @@
+<section class="cart-page">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Tu selección</p>
+      <h1>Carrito de compras</h1>
+    </div>
+    <a class="back-link" routerLink="/marketplace">Seguir explorando</a>
+  </div>
+
+  <p class="action-message" role="alert" *ngIf="actionMessage()">{{ actionMessage() }}</p>
+
+  <div class="cart-layout" *ngIf="cartStore.lines().length > 0; else emptyCart">
+    <section class="cart-items" aria-label="Productos en el carrito">
+      <article class="cart-item" *ngFor="let line of cartStore.lines()">
+        <img [src]="line.product.imageUrl" [alt]="line.product.name" />
+
+        <div class="item-information">
+          <a class="item-name" [routerLink]="['/producto', line.product.id]">
+            {{ line.product.name }}
+          </a>
+          <p>
+            {{ line.product.price | currency: 'COP' : 'symbol-narrow' : '1.0-0' }} /
+            {{ line.product.unit }}
+          </p>
+          <p>Productor: {{ line.product.producerName }}</p>
+        </div>
+
+        <div class="quantity-controls" [attr.aria-label]="'Cantidad de ' + line.product.name">
+          <button
+            type="button"
+            [attr.aria-label]="'Disminuir cantidad de ' + line.product.name"
+            [disabled]="line.quantity <= 1"
+            (click)="decrease(line.product.id)"
+          >
+            −
+          </button>
+          <span>{{ line.quantity }} {{ line.product.unit }}</span>
+          <button
+            type="button"
+            [attr.aria-label]="'Aumentar cantidad de ' + line.product.name"
+            [disabled]="line.quantity >= line.product.stock"
+            (click)="increase(line.product.id)"
+          >
+            +
+          </button>
+          <span class="stock-note">{{ line.product.stock }} disponibles</span>
+        </div>
+
+        <div class="item-total">
+          <strong>{{ line.subtotal | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+          <button class="remove-button" type="button" (click)="remove(line.product.id)">
+            Quitar
+          </button>
+        </div>
+      </article>
+    </section>
+
+    <aside class="order-summary" aria-label="Resumen del carrito">
+      <h2>Resumen</h2>
+      <p>
+        <span>Productos ({{ cartStore.totalQuantity() }} unidades)</span>
+        <strong>{{ cartStore.total() | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+      </p>
+      <p class="total-row">
+        <span>Total</span>
+        <strong>{{ cartStore.total() | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+      </p>
+      <p class="demo-note">Pedido de demostración. No se realizará ningún cobro ni despacho.</p>
+      <button class="checkout-button" type="button" disabled>Continuar al checkout</button>
+      <small>El checkout estará disponible en la siguiente parte del proyecto.</small>
+    </aside>
+  </div>
+
+  <ng-template #emptyCart>
+    <section class="empty-cart">
+      <span class="empty-icon" aria-hidden="true">🧺</span>
+      <h2>Tu carrito está vacío</h2>
+      <p>Explora el Marketplace y agrega productos frescos de productores locales.</p>
+      <a class="marketplace-button" routerLink="/marketplace">Ir al Marketplace</a>
+    </section>
+  </ng-template>
+</section>

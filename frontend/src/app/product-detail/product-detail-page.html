@@ -21,6 +21,25 @@
         <p class="availability out-of-stock">Producto agotado</p>
       </ng-template>
 
+      <button
+        class="add-to-cart-button"
+        type="button"
+        [disabled]="item.stock < 1 || cartStore.quantityFor(item.id) >= item.stock"
+        (click)="addToCart(item.id)"
+      >
+        {{
+          item.stock < 1
+            ? 'Producto agotado'
+            : cartStore.quantityFor(item.id) >= item.stock
+              ? 'Stock máximo en carrito'
+              : 'Agregar al carrito'
+        }}
+      </button>
+      <p class="cart-message" role="status" aria-live="polite" *ngIf="cartMessage()">
+        {{ cartMessage() }}
+        <a *ngIf="cartActionSucceeded()" routerLink="/carrito">Ver carrito</a>
+      </p>
+
       <dl class="product-facts">
         <div>
           <dt>Productor</dt>
