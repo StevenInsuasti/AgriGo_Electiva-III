@@ -7,7 +7,7 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   PaymentPreference,
   PurchaseOrder,
@@ -49,8 +49,9 @@ export class CheckoutPage {
   readonly cartStore = inject(CartStore);
   readonly productStore = inject(ProductStore);
   readonly orderStore = inject(OrderStore);
+  private readonly router = inject(Router);
   readonly errorMessage = signal('');
-  readonly createdOrder = signal<PurchaseOrder | null>(null);
+  readonly isSubmitting = signal(false);
   readonly paymentOptions: { value: PaymentPreference; label: string }[] = [
     { value: 'cash', label: 'Efectivo (simulado)' },
     { value: 'transfer', label: 'Transferencia (simulada)' },
@@ -68,7 +69,11 @@ export class CheckoutPage {
     return this.cartStore.cartItems().length === 0;
   }
 
-  confirmOrder(): void {
+  async confirmOrder(): Promise<void> {
+    if (this.isSubmitting()) {
+      return;
+    }
+
     this.errorMessage.set('');
     this.checkoutForm.markAllAsTouched();
 
@@ -99,9 +104,11 @@ export class CheckoutPage {
       total: orderItems.reduce((total, item) => total + item.subtotal, 0),
     };
 
+    this.isSubmitting.set(true);
     try {
       this.orderStore.addOrder(order);
     } catch (error) {
+      this.isSubmitting.set(false);
       this.errorMessage.set(
         error instanceof Error
           ? error.message
@@ -110,15 +117,30 @@ export class CheckoutPage {
       return;
     }
 
-    this.createdOrder.set(order);
-
+    let cartClearWarning = '';
     try {
       this.cartStore.clear();
     } catch (error) {
+      cartClearWarning =
+        error instanceof Error
+          ? `El pedido se guardó, pero no se pudo vaciar el carrito: ${error.message}`
+          : 'El pedido se guardó, pero no se pudo vaciar el carrito.';
+    }
+
+    try {
+      const navigated = await this.router.navigate(['/pedido', order.id], {
+        state: cartClearWarning ? { cartClearWarning } : undefined,
+      });
+      if (!navigated) {
+        this.errorMessage.set(
+          `El pedido ${order.id} se guardó, pero no se pudo abrir su confirmación. Consúltalo en Mis pedidos.`,
+        );
+      }
+    } catch (error) {
       this.errorMessage.set(
         error instanceof Error
-          ? `El pedido ${order.id} se guardó, pero no se pudo vaciar el carrito: ${error.message}`
-          : `El pedido ${order.id} se guardó, pero no se pudo vaciar el carrito.`,
+          ? `El pedido ${order.id} se guardó, pero no se pudo abrir su confirmación: ${error.message}`
+          : `El pedido ${order.id} se guardó, pero no se pudo abrir su confirmación.`,
       );
     }
   }

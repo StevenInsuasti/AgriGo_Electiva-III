@@ -36,5 +36,8 @@ describe('App', () => {
 
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('a[routerLink="/carrito"]')?.textContent).toContain('1');
+    expect(compiled.querySelector('a[routerLink="/mis-pedidos"]')?.textContent).toContain(
+      'Mis pedidos',
+    );
   });
 });

@@ -1,0 +1,50 @@
+<section class="orders-page">
+  <div class="page-heading">
+    <div>
+      <p class="eyebrow">Comprador</p>
+      <h1>Mis pedidos</h1>
+      <p>Consulta los pedidos de demostración guardados en este navegador.</p>
+    </div>
+    <a class="back-link" routerLink="/marketplace">Volver al Marketplace</a>
+  </div>
+
+  <div class="empty-state" *ngIf="orders().length === 0; else orderList">
+    <h2>Aún no tienes pedidos</h2>
+    <p>Cuando confirmes un pedido de demostración, aparecerá aquí.</p>
+    <a class="primary-button" routerLink="/marketplace">Explorar Marketplace</a>
+  </div>
+
+  <ng-template #orderList>
+    <div class="order-list">
+      <article class="order-card" *ngFor="let order of orders()">
+        <div class="order-heading">
+          <div>
+            <p class="eyebrow">Pedido de demostración</p>
+            <h2>Pedido {{ order.id }}</h2>
+            <p class="order-date">Fecha: {{ order.createdAt | date: 'medium' }}</p>
+          </div>
+          <a class="details-link" [routerLink]="['/pedido', order.id]">Ver confirmación</a>
+        </div>
+
+        <div class="item-list">
+          <article class="order-item" *ngFor="let item of order.items">
+            <div>
+              <h3>{{ item.productName }}</h3>
+              <p>
+                {{ item.quantity }} {{ item.unit }} ×
+                {{ item.unitPrice | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+              </p>
+            </div>
+            <strong>{{ item.subtotal | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+          </article>
+        </div>
+
+        <p class="total-row">
+          <span>Total simulado</span>
+          <strong>{{ order.total | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+        </p>
+        <p class="demo-note">No se realizó ningún cobro ni despacho real.</p>
+      </article>
+    </div>
+  </ng-template>
+</section>

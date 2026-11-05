@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { provideRouter } from '@angular/router';
+import { provideRouter, Router } from '@angular/router';
 import { CheckoutPage } from './checkout-page';
 import { CartStore } from '../services/cart.store';
 import { ProductStore } from '../services/product.store';
@@ -36,12 +36,12 @@ describe('CheckoutPage', () => {
     expect(compiled.querySelector('form')).toBeNull();
   });
 
-  it('does not save an order when delivery fields are invalid', () => {
+  it('does not save an order when delivery fields are invalid', async () => {
     TestBed.inject(CartStore).addProduct('seed-papa');
     const fixture = TestBed.createComponent(CheckoutPage);
     const page = fixture.componentInstance;
 
-    page.confirmOrder();
+    await page.confirmOrder();
 
     expect(page.checkoutForm.invalid).toBe(true);
     expect(page.errorMessage()).toContain('Revisa los datos de entrega');
@@ -49,16 +49,18 @@ describe('CheckoutPage', () => {
     expect(TestBed.inject(CartStore).quantityFor('seed-papa')).toBe(1);
   });
 
-  it('saves a price snapshot and clears the cart without decrementing stock', () => {
+  it('saves a price snapshot, clears the cart, and navigates to its confirmation', async () => {
     const cartStore = TestBed.inject(CartStore);
     const productStore = TestBed.inject(ProductStore);
+    const router = TestBed.inject(Router);
+    const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(true);
     cartStore.addProduct('seed-papa');
     cartStore.addProduct('seed-papa');
 
     const fixture = TestBed.createComponent(CheckoutPage);
     const page = fixture.componentInstance;
     fillValidForm(page);
-    page.confirmOrder();
+    await page.confirmOrder();
 
     const order = TestBed.inject(OrderStore).orders()[0];
     expect(order.customerName).toBe('Ana Gómez');
@@ -80,10 +82,26 @@ describe('CheckoutPage', () => {
     expect(JSON.parse(window.localStorage.getItem('agrigo.cart') ?? 'null')).toEqual([]);
     expect(cartStore.cartItems()).toEqual([]);
     expect(productStore.products().find((product) => product.id === 'seed-papa')?.stock).toBe(42);
-    expect(page.createdOrder()).toEqual(order);
+    expect(navigateSpy).toHaveBeenCalledWith(['/pedido', order.id], { state: undefined });
   });
 
-  it('rejects an order if current stock is lower than the cart quantity', () => {
+  it('does not save the same checkout twice if confirmation navigation fails', async () => {
+    const cartStore = TestBed.inject(CartStore);
+    cartStore.addProduct('seed-papa');
+    const router = TestBed.inject(Router);
+    const navigateSpy = vi.spyOn(router, 'navigate').mockResolvedValue(false);
+    const page = TestBed.createComponent(CheckoutPage).componentInstance;
+    fillValidForm(page);
+
+    await page.confirmOrder();
+    await page.confirmOrder();
+
+    expect(TestBed.inject(OrderStore).orders()).toHaveLength(1);
+    expect(navigateSpy).toHaveBeenCalledTimes(1);
+    expect(page.errorMessage()).toContain('se guardó');
+  });
+
+  it('rejects an order if current stock is lower than the cart quantity', async () => {
     const cartStore = TestBed.inject(CartStore);
     const productStore = TestBed.inject(ProductStore);
     cartStore.addProduct('seed-papa');
@@ -98,21 +116,21 @@ describe('CheckoutPage', () => {
     const fixture = TestBed.createComponent(CheckoutPage);
     const page = fixture.componentInstance;
     fillValidForm(page);
-    page.confirmOrder();
+    await page.confirmOrder();
 
     expect(page.errorMessage()).toContain('supera el stock actual');
     expect(TestBed.inject(OrderStore).orders()).toEqual([]);
     expect(cartStore.cartItems()).toEqual([{ productId: 'seed-papa', quantity: 2 }]);
   });
 
-  it('rejects a phone number with too few digits', () => {
+  it('rejects a phone number with too few digits', async () => {
     TestBed.inject(CartStore).addProduct('seed-papa');
     const fixture = TestBed.createComponent(CheckoutPage);
     const page = fixture.componentInstance;
     fillValidForm(page);
     page.checkoutForm.controls.phone.setValue('123');
 
-    page.confirmOrder();
+    await page.confirmOrder();
 
     expect(page.checkoutForm.controls.phone.hasError('phone')).toBe(true);
     expect(TestBed.inject(OrderStore).orders()).toEqual([]);
