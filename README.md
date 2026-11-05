@@ -98,7 +98,7 @@ El Marketplace consulta `ProductStore`, permite buscar por nombre de producto o 
 
 ### Carrito
 
-La pantalla del carrito está en `/carrito`. `CartStore`, en `frontend/src/app/services/cart.store.ts`, conserva únicamente el identificador y la cantidad de cada producto con el contrato `CartItem`, y consulta `ProductStore` para obtener los datos y el stock vigentes. La clave `agrigo.cart` guarda el carrito en el navegador. El estado se carga al iniciar, limita las cantidades al stock disponible y calcula subtotales y total. El checkout permanece deshabilitado hasta que se integre su etapa.
+La pantalla del carrito está en `/carrito`. `CartStore`, en `frontend/src/app/services/cart.store.ts`, conserva únicamente el identificador y la cantidad de cada producto con el contrato `CartItem`, y consulta `ProductStore` para obtener los datos y el stock vigentes. La clave `agrigo.cart` guarda el carrito en el navegador. El estado se carga al iniciar, limita las cantidades al stock disponible y calcula subtotales y total. Desde el carrito se puede continuar al checkout.
 
 El detalle de producto permite agregar unidades al carrito. El enlace superior muestra el total de unidades; desde el carrito se pueden aumentar, disminuir o quitar productos.
 

@@ -1,19 +1,23 @@
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 import { OrderConfirmationPage } from './order-confirmation-page';
 import { PurchaseOrder } from '../models/purchase-order.model';
 import { OrderStore } from '../services/order.store';
 
 describe('OrderConfirmationPage', () => {
+  const routeParamMap = new BehaviorSubject(convertToParamMap({ id: 'order-confirm-1' }));
+
   beforeEach(async () => {
     window.localStorage.clear();
+    routeParamMap.next(convertToParamMap({ id: 'order-confirm-1' }));
     await TestBed.configureTestingModule({
       imports: [OrderConfirmationPage],
       providers: [
         provideRouter([]),
         {
           provide: ActivatedRoute,
-          useValue: { snapshot: { paramMap: convertToParamMap({ id: 'order-confirm-1' }) } },
+          useValue: { snapshot: { paramMap: routeParamMap.value }, paramMap: routeParamMap },
         },
       ],
     }).compileComponents();
@@ -67,5 +71,25 @@ describe('OrderConfirmationPage', () => {
     expect((fixture.nativeElement as HTMLElement).textContent).toContain(
       'No encontramos ese pedido',
     );
+  });
+
+  it('updates the displayed order when the route id changes', () => {
+    const secondOrder: PurchaseOrder = {
+      ...savedOrder,
+      id: 'order-confirm-2',
+      customerName: 'Carlos Ruiz',
+    };
+    const orderStore = TestBed.inject(OrderStore);
+    orderStore.addOrder(savedOrder);
+    orderStore.addOrder(secondOrder);
+
+    const fixture = TestBed.createComponent(OrderConfirmationPage);
+    fixture.detectChanges();
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('¡Gracias, Ana Gómez!');
+
+    routeParamMap.next(convertToParamMap({ id: secondOrder.id }));
+    fixture.detectChanges();
+
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain('¡Gracias, Carlos Ruiz!');
   });
 });
