@@ -10,6 +10,8 @@ Construir una experiencia clara y funcional que permita demostrar los conceptos 
 
 ## Usuarios y funcionalidades
 
+AgriGo ofrece dos modos de recorrido para la demostración. En `/inicio`, el visitante elige comprador o productor. La elección se conserva en `localStorage` para ordenar la navegación, no autentica a una persona ni protege información. No hay registro, contraseñas ni cuentas.
+
 ### Comprador
 
 - Explorar los productos de demostración y los productos publicados localmente.
@@ -23,10 +25,9 @@ Construir una experiencia clara y funcional que permita demostrar los conceptos 
 
 ### Productor
 
-- Consultar sus publicaciones.
+- En el modo de demostración, administrar las publicaciones del perfil fijo “Héctor Riascos”; no existe una identidad real de productor.
 - Crear productos indicando nombre, descripción, categoría, precio en pesos colombianos, unidad, cantidad disponible, productor, ubicación e imagen.
 - Editar los datos de sus productos.
-- Cambiar sus datos de productor.
 - Eliminar publicaciones.
 
 ## Recorrido principal de demostración
@@ -90,7 +91,11 @@ El store inicializa `agrigo.products` en `localStorage` con los datos de `fronte
 
 ### Publicaciones del productor
 
-La pantalla `frontend/src/app/producer-publications/` se abre en `/mis-publicaciones` y utiliza el `ProductStore` compartido para crear, editar y eliminar productos. En esta demostración, “Mis publicaciones” muestra los productos cuyo `producerName` es `Héctor Riascos`, incluido el producto semilla asignado a ese productor. El formulario mantiene ese nombre fijo porque el proyecto no implementa cuentas ni autenticación. Los campos del producto se validan antes de guardar y las acciones actualizan el mismo catálogo que consulta Marketplace.
+La pantalla `frontend/src/app/producer-publications/` se abre en `/mis-publicaciones` dentro del modo productor y utiliza el `ProductStore` compartido para crear, editar y eliminar productos. “Mis publicaciones” muestra los productos cuyo `producerName` es `Héctor Riascos`, incluido el producto semilla asignado a ese productor. El formulario mantiene ese nombre fijo porque el proyecto no implementa cuentas ni autenticación. Los campos del producto se validan antes de guardar y las acciones actualizan el mismo catálogo que consulta Marketplace.
+
+### Modos de demostración
+
+La selección inicial está disponible en `/inicio`. `DemoRoleStore`, en `frontend/src/app/services/demo-role.store.ts`, recuerda `buyer` o `producer` bajo la clave `agrigo.demo-role` para presentar la navegación correspondiente en este navegador. Las rutas restringidas al modo equivocado vuelven al selector. Este comportamiento es únicamente de presentación: no es una sesión autenticada ni una medida de seguridad, y no deben guardarse contraseñas en `localStorage`.
 
 ### Marketplace y detalle
 
@@ -98,7 +103,7 @@ El Marketplace consulta `ProductStore`, permite buscar por nombre de producto o 
 
 ### Carrito
 
-La pantalla del carrito está en `/carrito`. `CartStore`, en `frontend/src/app/services/cart.store.ts`, conserva únicamente el identificador y la cantidad de cada producto con el contrato `CartItem`, y consulta `ProductStore` para obtener los datos y el stock vigentes. La clave `agrigo.cart` guarda el carrito en el navegador. El estado se carga al iniciar, limita las cantidades al stock disponible y calcula subtotales y total. El checkout permanece deshabilitado hasta que se integre su etapa.
+La pantalla del carrito está en `/carrito`. `CartStore`, en `frontend/src/app/services/cart.store.ts`, conserva únicamente el identificador y la cantidad de cada producto con el contrato `CartItem`, y consulta `ProductStore` para obtener los datos y el stock vigentes. La clave `agrigo.cart` guarda el carrito en el navegador. El estado se carga al iniciar, limita las cantidades al stock disponible y calcula subtotales y total. Desde el carrito se puede continuar al checkout.
 
 El detalle de producto permite agregar unidades al carrito. El enlace superior muestra el total de unidades; desde el carrito se pueden aumentar, disminuir o quitar productos.
 

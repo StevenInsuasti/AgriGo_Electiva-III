@@ -31,6 +31,7 @@ describe('App', () => {
 
   it('shows the cart link and the current number of units', () => {
     const fixture = TestBed.createComponent(App);
+    fixture.componentInstance.roleStore.chooseRole('buyer');
     fixture.componentInstance.cartStore.addProduct('seed-papa');
     fixture.detectChanges();
 
@@ -39,5 +40,19 @@ describe('App', () => {
     expect(compiled.querySelector('a[routerLink="/mis-pedidos"]')?.textContent).toContain(
       'Mis pedidos',
     );
+    expect(compiled.querySelector('a[routerLink="/mis-publicaciones"]')).toBeNull();
+    expect(compiled.textContent).toContain('Modo comprador');
+  });
+
+  it('shows producer navigation without buyer purchase links', () => {
+    const fixture = TestBed.createComponent(App);
+    fixture.componentInstance.roleStore.chooseRole('producer');
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.querySelector('a[routerLink="/mis-publicaciones"]')).not.toBeNull();
+    expect(compiled.querySelector('a[routerLink="/carrito"]')).toBeNull();
+    expect(compiled.querySelector('a[routerLink="/mis-pedidos"]')).toBeNull();
+    expect(compiled.textContent).toContain('Héctor Riascos');
   });
 });
