@@ -1,0 +1,59 @@
+<section class="confirmation-page">
+  <ng-container *ngIf="order() as purchaseOrder; else missingOrder">
+    <div class="page-heading">
+      <div>
+        <p class="eyebrow">Pedido guardado</p>
+        <h1>¡Gracias, {{ purchaseOrder.customerName }}!</h1>
+        <p>Tu pedido de demostración quedó guardado en este navegador.</p>
+      </div>
+      <a class="back-link" routerLink="/mis-pedidos">Ver mis pedidos</a>
+    </div>
+
+    <p class="warning-banner" role="alert" *ngIf="cartClearWarning">{{ cartClearWarning }}</p>
+
+    <article class="order-card">
+      <div class="order-meta">
+        <p><strong>Identificador:</strong> {{ purchaseOrder.id }}</p>
+        <p><strong>Fecha:</strong> {{ purchaseOrder.createdAt | date: 'medium' }}</p>
+        <p><strong>Entrega:</strong> {{ purchaseOrder.deliveryAddress }}</p>
+        <p><strong>Teléfono:</strong> {{ purchaseOrder.phone }}</p>
+      </div>
+
+      <h2>Productos registrados</h2>
+      <div class="item-list">
+        <article class="order-item" *ngFor="let item of purchaseOrder.items">
+          <div>
+            <h3>{{ item.productName }}</h3>
+            <p>
+              {{ item.quantity }} {{ item.unit }} ×
+              {{ item.unitPrice | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}
+            </p>
+          </div>
+          <strong>{{ item.subtotal | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+        </article>
+      </div>
+
+      <p class="total-row">
+        <span>Total simulado</span>
+        <strong>{{ purchaseOrder.total | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
+      </p>
+      <p class="demo-note">
+        Esta compra es una simulación. No se realizó ningún cobro ni despacho real.
+      </p>
+    </article>
+
+    <a class="primary-button" routerLink="/marketplace">Volver al Marketplace</a>
+  </ng-container>
+
+  <ng-template #missingOrder>
+    <div class="missing-order">
+      <p class="eyebrow">Pedido no disponible</p>
+      <h1>No encontramos ese pedido</h1>
+      <p>Puede que el identificador no exista en los pedidos guardados en este navegador.</p>
+      <div class="page-links">
+        <a class="primary-button" routerLink="/mis-pedidos">Ir a Mis pedidos</a>
+        <a class="back-link" routerLink="/marketplace">Volver al Marketplace</a>
+      </div>
+    </div>
+  </ng-template>
+</section>

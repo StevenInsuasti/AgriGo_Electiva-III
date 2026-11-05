@@ -1,0 +1,132 @@
+.orders-page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.page-heading,
+.order-heading,
+.order-item,
+.total-row {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.page-heading h1,
+.order-heading h2,
+.order-item h3 {
+  color: var(--color-forest);
+  margin: 0.25rem 0;
+}
+
+.page-heading p,
+.order-date,
+.order-item p {
+  color: var(--color-text-muted);
+  margin: 0.4rem 0 0;
+}
+
+.eyebrow {
+  color: var(--color-green);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.back-link,
+.details-link {
+  color: var(--color-forest);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.back-link:hover,
+.details-link:hover {
+  text-decoration: underline;
+}
+
+.empty-state,
+.order-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.empty-state {
+  text-align: center;
+}
+
+.empty-state h2 {
+  color: var(--color-forest);
+  margin-top: 0;
+}
+
+.order-list,
+.item-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.order-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.order-item {
+  border-bottom: 1px solid var(--color-border);
+  padding: 0.75rem 0;
+}
+
+.order-item strong,
+.total-row strong {
+  color: var(--color-forest);
+  white-space: nowrap;
+}
+
+.total-row {
+  border-top: 1px solid var(--color-border);
+  font-size: 1.1rem;
+  margin: 0;
+  padding-top: 1rem;
+}
+
+.demo-note {
+  background: var(--color-green-soft);
+  border-radius: 0.65rem;
+  color: var(--color-forest);
+  margin: 0;
+  padding: 0.75rem 1rem;
+}
+
+.primary-button {
+  background: var(--color-forest);
+  border: 0;
+  border-radius: 0.7rem;
+  color: white;
+  display: inline-block;
+  font-weight: 700;
+  margin-top: 0.75rem;
+  padding: 0.85rem 1.1rem;
+  text-decoration: none;
+}
+
+.primary-button:hover {
+  background: #204b30;
+}
+
+@media (max-width: 600px) {
+  .page-heading,
+  .order-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .order-item {
+    align-items: flex-start;
+  }
+}

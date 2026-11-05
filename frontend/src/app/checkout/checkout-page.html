@@ -8,22 +8,7 @@
     <a class="back-link" routerLink="/carrito">Volver al carrito</a>
   </div>
 
-  <div class="success-panel" role="status" *ngIf="createdOrder() as order">
-    <p class="eyebrow">Pedido guardado</p>
-    <h2>¡Gracias, {{ order.customerName }}!</h2>
-    <p>
-      Tu pedido de demostración <strong>{{ order.id }}</strong> se guardó en este navegador.
-    </p>
-    <p>
-      Total registrado:
-      <strong>{{ order.total | currency: 'COP' : 'symbol-narrow' : '1.0-0' }}</strong>
-    </p>
-    <p>No se realizó ningún cobro, pago ni despacho.</p>
-    <p class="error-banner" role="alert" *ngIf="errorMessage()">{{ errorMessage() }}</p>
-    <a class="primary-button" routerLink="/marketplace">Volver al Marketplace</a>
-  </div>
-
-  <ng-container *ngIf="!createdOrder()">
+  <ng-container>
     <p class="error-banner" role="alert" *ngIf="errorMessage()">{{ errorMessage() }}</p>
 
     <div class="empty-checkout" *ngIf="cartIsEmpty; else checkoutContent">
@@ -149,8 +134,12 @@
             </p>
           </section>
 
-          <button class="primary-button confirm-button" type="submit">
-            Confirmar pedido de demostración
+          <button
+            class="primary-button confirm-button"
+            type="submit"
+            [disabled]="isSubmitting()"
+          >
+            {{ isSubmitting() ? 'Guardando pedido…' : 'Confirmar pedido de demostración' }}
           </button>
         </form>
 
