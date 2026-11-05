@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { PRODUCT_SEED } from '../data/product-seed';
-import { Product } from '../models/product.model';
+import { MAX_PRODUCT_PRICE_COP, MAX_PRODUCT_STOCK, Product } from '../models/product.model';
 import { ProductStore } from '../services/product.store';
 import { ProducerPublicationsPage } from './producer-publications-page';
 
@@ -36,7 +36,7 @@ describe('ProducerPublicationsPage', () => {
     expect(page.producerProducts).toHaveLength(1);
   });
 
-  it('rejects non-positive prices and fractional stock quantities', () => {
+  it('rejects non-positive prices and fractional prices or stock quantities', () => {
     const fixture = TestBed.createComponent(ProducerPublicationsPage);
     const page = fixture.componentInstance;
     page.productForm.patchValue({
@@ -55,6 +55,60 @@ describe('ProducerPublicationsPage', () => {
     expect(page.productForm.controls.price.hasError('min')).toBe(true);
     expect(page.productForm.controls.stock.hasError('wholeNumber')).toBe(true);
     expect(page.producerProducts).toHaveLength(1);
+  });
+
+  it('rejects decimal, negative, excessive, and unsafe product amounts', () => {
+    const page = TestBed.createComponent(ProducerPublicationsPage).componentInstance;
+    const validFields = {
+      name: 'Fresa campesina',
+      description: 'Fresas frescas cosechadas esta semana.',
+      category: 'Frutas',
+      unit: 'kg',
+      location: 'La Ceja, Antioquia',
+      imageUrl: 'https://example.com/fresa.jpg',
+    };
+    const invalidAmounts = [
+      { price: 12.5, stock: 1 },
+      { price: -1, stock: 1 },
+      { price: MAX_PRODUCT_PRICE_COP + 1, stock: 1 },
+      { price: 6000, stock: 1.5 },
+      { price: 6000, stock: MAX_PRODUCT_STOCK + 1 },
+      { price: 6000, stock: Number.MAX_SAFE_INTEGER + 1 },
+    ];
+
+    for (const amounts of invalidAmounts) {
+      page.productForm.patchValue({ ...validFields, ...amounts });
+      page.saveProduct();
+      expect(page.productForm.invalid).toBe(true);
+      expect(page.producerProducts).toHaveLength(1);
+    }
+
+    expect(page.productForm.controls.price.hasError('wholeNumber')).toBe(false);
+    page.productForm.patchValue({
+      ...validFields,
+      price: 6000,
+      stock: Number.MAX_SAFE_INTEGER + 1,
+    });
+    expect(page.productForm.controls.stock.hasError('wholeNumber')).toBe(true);
+  });
+
+  it('accepts the configured amount limits', () => {
+    const page = TestBed.createComponent(ProducerPublicationsPage).componentInstance;
+    page.productForm.patchValue({
+      name: 'Fresa campesina',
+      description: 'Fresas frescas cosechadas esta semana.',
+      category: 'Frutas',
+      price: MAX_PRODUCT_PRICE_COP,
+      unit: 'kg',
+      stock: MAX_PRODUCT_STOCK,
+      location: 'La Ceja, Antioquia',
+      imageUrl: 'https://example.com/fresa.jpg',
+    });
+
+    page.saveProduct();
+
+    expect(page.producerProducts[1]?.price).toBe(MAX_PRODUCT_PRICE_COP);
+    expect(page.producerProducts[1]?.stock).toBe(MAX_PRODUCT_STOCK);
   });
 
   it('rejects whitespace-only text and descriptions shorter than eight trimmed characters', () => {
@@ -103,14 +157,14 @@ describe('ProducerPublicationsPage', () => {
     const fixture = TestBed.createComponent(ProducerPublicationsPage);
     const page = fixture.componentInstance;
     page.productForm.patchValue({
-      name: 'Fresa campesina',
-      description: 'Fresas frescas cosechadas esta semana.',
+      name: ' Fresa campesina ',
+      description: ' Fresas frescas cosechadas esta semana. ',
       category: 'Frutas',
       price: 6000,
-      unit: 'kg',
+      unit: ' kg ',
       stock: 12,
-      location: 'La Ceja, Antioquia',
-      imageUrl: 'https://example.com/fresa.jpg',
+      location: ' La Ceja, Antioquia ',
+      imageUrl: ' https://example.com/fresa.jpg ',
     });
 
     page.saveProduct();
@@ -120,6 +174,12 @@ describe('ProducerPublicationsPage', () => {
     ) as Product[];
     expect(page.producerProducts.some((product) => product.name === 'Fresa campesina')).toBe(true);
     expect(savedProducts.some((product) => product.name === 'Fresa campesina')).toBe(true);
+    expect(savedProducts.find((product) => product.name === 'Fresa campesina')).toMatchObject({
+      description: 'Fresas frescas cosechadas esta semana.',
+      unit: 'kg',
+      location: 'La Ceja, Antioquia',
+      imageUrl: 'https://example.com/fresa.jpg',
+    });
     expect(page.feedback()).toContain('Se publicó');
   });
 

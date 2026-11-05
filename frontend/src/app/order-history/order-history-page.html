@@ -8,6 +8,8 @@
     <a class="back-link" routerLink="/marketplace">Volver al Marketplace</a>
   </div>
 
+  <p class="warning-banner" role="alert" *ngIf="loadWarning()">{{ loadWarning() }}</p>
+
   <div class="empty-state" *ngIf="orders().length === 0; else orderList">
     <h2>Aún no tienes pedidos</h2>
     <p>Cuando confirmes un pedido de demostración, aparecerá aquí.</p>

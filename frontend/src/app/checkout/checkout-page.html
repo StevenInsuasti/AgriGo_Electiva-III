@@ -35,6 +35,7 @@
                 id="customer-name"
                 type="text"
                 formControlName="customerName"
+                [attr.maxlength]="maxCustomerNameLength"
                 autocomplete="name"
               />
               <small
@@ -45,6 +46,15 @@
                 "
               >
                 Ingresa tu nombre.
+              </small>
+              <small
+                class="field-error"
+                *ngIf="
+                  checkoutForm.controls.customerName.touched &&
+                  checkoutForm.controls.customerName.hasError('maxlength')
+                "
+              >
+                El nombre no puede superar {{ maxCustomerNameLength }} caracteres.
               </small>
               <small
                 class="field-error"
@@ -83,7 +93,7 @@
                   checkoutForm.controls.phone.hasError('phone')
                 "
               >
-                El teléfono debe contener entre 7 y 15 dígitos.
+                Usa entre 7 y 15 dígitos; se permiten +, espacios, paréntesis, guiones y puntos.
               </small>
             </div>
 
@@ -92,6 +102,7 @@
               <textarea
                 id="delivery-address"
                 formControlName="deliveryAddress"
+                [attr.maxlength]="maxDeliveryAddressLength"
                 autocomplete="street-address"
                 rows="3"
                 placeholder="Calle, carrera, número y complemento"
@@ -104,6 +115,15 @@
                 "
               >
                 Ingresa una dirección.
+              </small>
+              <small
+                class="field-error"
+                *ngIf="
+                  checkoutForm.controls.deliveryAddress.touched &&
+                  checkoutForm.controls.deliveryAddress.hasError('maxlength')
+                "
+              >
+                La dirección no puede superar {{ maxDeliveryAddressLength }} caracteres.
               </small>
               <small
                 class="field-error"
@@ -134,11 +154,7 @@
             </p>
           </section>
 
-          <button
-            class="primary-button confirm-button"
-            type="submit"
-            [disabled]="isSubmitting()"
-          >
+          <button class="primary-button confirm-button" type="submit" [disabled]="isSubmitting()">
             {{ isSubmitting() ? 'Guardando pedido…' : 'Confirmar pedido de demostración' }}
           </button>
         </form>

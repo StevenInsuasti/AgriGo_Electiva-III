@@ -68,4 +68,18 @@ describe('OrderConfirmationPage', () => {
       'No encontramos ese pedido',
     );
   });
+
+  it('does not break when the requested stored order has an invalid total', () => {
+    window.localStorage.setItem(
+      'agrigo.orders',
+      JSON.stringify([{ ...savedOrder, total: Infinity }]),
+    );
+
+    const fixture = TestBed.createComponent(OrderConfirmationPage);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    expect(compiled.textContent).toContain('No encontramos ese pedido');
+    expect(compiled.textContent).toContain('Se omitieron pedidos con datos no válidos');
+  });
 });
