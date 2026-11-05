@@ -13,6 +13,7 @@ import {
   PurchaseOrder,
   PurchaseOrderItem,
 } from '../models/purchase-order.model';
+import { MAX_PRODUCT_PRICE_COP, MAX_PRODUCT_STOCK } from '../models/product.model';
 import { CartStore } from '../services/cart.store';
 import { OrderStore } from '../services/order.store';
 import { ProductStore } from '../services/product.store';
@@ -34,9 +35,40 @@ const phoneValidator: ValidatorFn = (control): ValidationErrors | null => {
     return { phone: true };
   }
 
-  const digits = control.value.replace(/\D/g, '');
+  const phone = control.value.trim();
+  if (!/^\+?[\d ().-]+$/.test(phone)) {
+    return { phone: true };
+  }
+
+  let parenthesisDepth = 0;
+  let hasDigitInParentheses = false;
+  for (const character of phone) {
+    if (character === '(') {
+      if (parenthesisDepth > 0) {
+        return { phone: true };
+      }
+      parenthesisDepth = 1;
+      hasDigitInParentheses = false;
+    } else if (character === ')') {
+      if (parenthesisDepth === 0 || !hasDigitInParentheses) {
+        return { phone: true };
+      }
+      parenthesisDepth = 0;
+    } else if (parenthesisDepth > 0 && /\d/.test(character)) {
+      hasDigitInParentheses = true;
+    }
+  }
+
+  if (parenthesisDepth !== 0) {
+    return { phone: true };
+  }
+
+  const digits = phone.replace(/\D/g, '');
   return digits.length >= 7 && digits.length <= 15 ? null : { phone: true };
 };
+
+const MAX_CUSTOMER_NAME_LENGTH = 100;
+const MAX_DELIVERY_ADDRESS_LENGTH = 200;
 
 @Component({
   selector: 'app-checkout-page',
@@ -52,6 +84,8 @@ export class CheckoutPage {
   private readonly router = inject(Router);
   readonly errorMessage = signal('');
   readonly isSubmitting = signal(false);
+  readonly maxCustomerNameLength = MAX_CUSTOMER_NAME_LENGTH;
+  readonly maxDeliveryAddressLength = MAX_DELIVERY_ADDRESS_LENGTH;
   readonly paymentOptions: { value: PaymentPreference; label: string }[] = [
     { value: 'cash', label: 'Efectivo (simulado)' },
     { value: 'transfer', label: 'Transferencia (simulada)' },
@@ -59,9 +93,23 @@ export class CheckoutPage {
   ];
 
   readonly checkoutForm = this.formBuilder.group({
-    customerName: ['', [trimmedRequiredValidator, trimmedMinLengthValidator(3)]],
+    customerName: [
+      '',
+      [
+        trimmedRequiredValidator,
+        trimmedMinLengthValidator(3),
+        Validators.maxLength(MAX_CUSTOMER_NAME_LENGTH),
+      ],
+    ],
     phone: ['', [trimmedRequiredValidator, phoneValidator]],
-    deliveryAddress: ['', [trimmedRequiredValidator, trimmedMinLengthValidator(5)]],
+    deliveryAddress: [
+      '',
+      [
+        trimmedRequiredValidator,
+        trimmedMinLengthValidator(5),
+        Validators.maxLength(MAX_DELIVERY_ADDRESS_LENGTH),
+      ],
+    ],
     paymentPreference: this.formBuilder.control<PaymentPreference>('cash', Validators.required),
   });
 
@@ -92,6 +140,12 @@ export class CheckoutPage {
       return;
     }
 
+    const total = orderItems.reduce((sum, item) => sum + item.subtotal, 0);
+    if (!Number.isSafeInteger(total)) {
+      this.errorMessage.set('El total del pedido supera el rango seguro para pesos colombianos.');
+      return;
+    }
+
     const formValues = this.checkoutForm.getRawValue();
     const order: PurchaseOrder = {
       id: this.createOrderId(),
@@ -101,7 +155,7 @@ export class CheckoutPage {
       deliveryAddress: formValues.deliveryAddress.trim(),
       paymentPreference: formValues.paymentPreference,
       items: orderItems,
-      total: orderItems.reduce((total, item) => total + item.subtotal, 0),
+      total,
     };
 
     this.isSubmitting.set(true);
@@ -165,7 +219,36 @@ export class CheckoutPage {
         return null;
       }
 
+      if (
+        !Number.isSafeInteger(product.price) ||
+        product.price < 1 ||
+        product.price > MAX_PRODUCT_PRICE_COP
+      ) {
+        this.errorMessage.set(
+          `El precio de "${product.name}" no es válido. Actualiza la publicación antes de continuar.`,
+        );
+        return null;
+      }
+
+      if (
+        !Number.isSafeInteger(product.stock) ||
+        product.stock < 1 ||
+        product.stock > MAX_PRODUCT_STOCK
+      ) {
+        this.errorMessage.set(
+          `El stock de "${product.name}" no es válido. Actualiza la publicación antes de continuar.`,
+        );
+        return null;
+      }
+
       const subtotal = product.price * cartItem.quantity;
+      if (!Number.isSafeInteger(subtotal)) {
+        this.errorMessage.set(
+          `El subtotal de "${product.name}" supera el rango seguro para pesos colombianos.`,
+        );
+        return null;
+      }
+
       items.push({
         productId: product.id,
         productName: product.name,

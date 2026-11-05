@@ -1,7 +1,7 @@
 import { isPlatformBrowser } from '@angular/common';
 import { Injectable, PLATFORM_ID, inject, signal } from '@angular/core';
 import { PRODUCT_SEED } from '../data/product-seed';
-import { Product } from '../models/product.model';
+import { MAX_PRODUCT_PRICE_COP, MAX_PRODUCT_STOCK, Product } from '../models/product.model';
 
 const PRODUCT_STORAGE_KEY = 'agrigo.products';
 
@@ -19,22 +19,26 @@ export class ProductStore {
   }
 
   addProduct(product: Product): void {
-    if (this.products().some((current) => current.id === product.id)) {
-      throw new Error(`Ya existe un producto con el identificador "${product.id}".`);
+    const normalizedProduct = this.normalizeProduct(product);
+
+    if (this.products().some((current) => current.id === normalizedProduct.id)) {
+      throw new Error(`Ya existe un producto con el identificador "${normalizedProduct.id}".`);
     }
 
-    this.commitProducts([...this.products(), product]);
+    this.commitProducts([...this.products(), normalizedProduct]);
   }
 
   updateProduct(updatedProduct: Product): void {
-    const exists = this.products().some((product) => product.id === updatedProduct.id);
+    const normalizedProduct = this.normalizeProduct(updatedProduct);
+
+    const exists = this.products().some((product) => product.id === normalizedProduct.id);
     if (!exists) {
-      throw new Error(`No se encontró el producto "${updatedProduct.id}" para actualizarlo.`);
+      throw new Error(`No se encontró el producto "${normalizedProduct.id}" para actualizarlo.`);
     }
 
     this.commitProducts(
       this.products().map((product) =>
-        product.id === updatedProduct.id ? updatedProduct : product,
+        product.id === normalizedProduct.id ? normalizedProduct : product,
       ),
     );
   }
@@ -81,6 +85,49 @@ export class ProductStore {
     if (isPlatformBrowser(this.platformId)) {
       window.localStorage.setItem(PRODUCT_STORAGE_KEY, JSON.stringify(products));
     }
+  }
+
+  private normalizeProduct(product: Product): Product {
+    const normalizedProduct: Product = {
+      ...product,
+      name: product.name.trim(),
+      description: product.description.trim(),
+      category: product.category.trim(),
+      unit: product.unit.trim(),
+      producerName: product.producerName.trim(),
+      location: product.location.trim(),
+      imageUrl: product.imageUrl.trim(),
+    };
+
+    if (
+      !normalizedProduct.name ||
+      !normalizedProduct.description ||
+      !normalizedProduct.category ||
+      !normalizedProduct.unit ||
+      !normalizedProduct.producerName ||
+      !normalizedProduct.location ||
+      !normalizedProduct.imageUrl
+    ) {
+      throw new Error('Los campos de texto del producto son obligatorios.');
+    }
+
+    if (
+      !Number.isSafeInteger(normalizedProduct.price) ||
+      normalizedProduct.price < 1 ||
+      normalizedProduct.price > MAX_PRODUCT_PRICE_COP
+    ) {
+      throw new Error(`El precio debe ser un entero entre $1 y $${MAX_PRODUCT_PRICE_COP} COP.`);
+    }
+
+    if (
+      !Number.isSafeInteger(normalizedProduct.stock) ||
+      normalizedProduct.stock < 1 ||
+      normalizedProduct.stock > MAX_PRODUCT_STOCK
+    ) {
+      throw new Error(`La cantidad debe ser un entero entre 1 y ${MAX_PRODUCT_STOCK}.`);
+    }
+
+    return normalizedProduct;
   }
 }
 

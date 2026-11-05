@@ -1,4 +1,6 @@
 <section class="confirmation-page">
+  <p class="warning-banner" role="alert" *ngIf="loadWarning()">{{ loadWarning() }}</p>
+
   <ng-container *ngIf="order() as purchaseOrder; else missingOrder">
     <div class="page-heading">
       <div>

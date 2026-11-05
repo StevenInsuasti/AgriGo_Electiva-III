@@ -4,6 +4,8 @@ import { CheckoutPage } from './checkout-page';
 import { CartStore } from '../services/cart.store';
 import { ProductStore } from '../services/product.store';
 import { OrderStore } from '../services/order.store';
+import { PRODUCT_SEED } from '../data/product-seed';
+import { MAX_PRODUCT_PRICE_COP } from '../models/product.model';
 
 describe('CheckoutPage', () => {
   beforeEach(async () => {
@@ -134,5 +136,116 @@ describe('CheckoutPage', () => {
 
     expect(page.checkoutForm.controls.phone.hasError('phone')).toBe(true);
     expect(TestBed.inject(OrderStore).orders()).toEqual([]);
+  });
+
+  it('rejects phone text, misplaced separators, and invalid digit counts', async () => {
+    TestBed.inject(CartStore).addProduct('seed-papa');
+    const page = TestBed.createComponent(CheckoutPage).componentInstance;
+    fillValidForm(page);
+
+    for (const phone of [
+      'abc3001234567xyz',
+      '300)123(4567',
+      '300 () 123-4567',
+      '123456',
+      '1234567890123456',
+      '++573001234567',
+    ]) {
+      page.checkoutForm.controls.phone.setValue(phone);
+      await page.confirmOrder();
+      expect(page.checkoutForm.controls.phone.hasError('phone')).toBe(true);
+    }
+
+    expect(TestBed.inject(OrderStore).orders()).toEqual([]);
+  });
+
+  it('accepts permitted phone separators and trims checkout text fields', async () => {
+    TestBed.inject(CartStore).addProduct('seed-papa');
+    const page = TestBed.createComponent(CheckoutPage).componentInstance;
+    fillValidForm(page);
+    page.checkoutForm.patchValue({
+      phone: '  +57 (300) 123-4567  ',
+      customerName: '  Ana Gómez  ',
+      deliveryAddress: '  Calle 10 # 20-30  ',
+    });
+
+    await page.confirmOrder();
+
+    expect(TestBed.inject(OrderStore).orders()[0]).toMatchObject({
+      customerName: 'Ana Gómez',
+      phone: '+57 (300) 123-4567',
+      deliveryAddress: 'Calle 10 # 20-30',
+    });
+  });
+
+  it('rejects required checkout text fields containing only spaces', async () => {
+    TestBed.inject(CartStore).addProduct('seed-papa');
+    const page = TestBed.createComponent(CheckoutPage).componentInstance;
+    fillValidForm(page);
+    page.checkoutForm.patchValue({ customerName: '   ', deliveryAddress: '   ' });
+
+    await page.confirmOrder();
+
+    expect(page.checkoutForm.controls.customerName.hasError('required')).toBe(true);
+    expect(page.checkoutForm.controls.deliveryAddress.hasError('required')).toBe(true);
+    expect(TestBed.inject(OrderStore).orders()).toEqual([]);
+  });
+
+  it('accepts checkout name and address at their maximum lengths', async () => {
+    TestBed.inject(CartStore).addProduct('seed-papa');
+    const page = TestBed.createComponent(CheckoutPage).componentInstance;
+    fillValidForm(page);
+    page.checkoutForm.patchValue({
+      customerName: 'N'.repeat(page.maxCustomerNameLength),
+      deliveryAddress: 'A'.repeat(page.maxDeliveryAddressLength),
+    });
+
+    await page.confirmOrder();
+
+    expect(TestBed.inject(OrderStore).orders()[0]?.customerName).toHaveLength(
+      page.maxCustomerNameLength,
+    );
+    expect(TestBed.inject(OrderStore).orders()[0]?.deliveryAddress).toHaveLength(
+      page.maxDeliveryAddressLength,
+    );
+  });
+
+  it('rejects checkout name and address over their maximum lengths', async () => {
+    TestBed.inject(CartStore).addProduct('seed-papa');
+    const page = TestBed.createComponent(CheckoutPage).componentInstance;
+    fillValidForm(page);
+    page.checkoutForm.patchValue({
+      customerName: 'N'.repeat(page.maxCustomerNameLength + 1),
+      deliveryAddress: 'A'.repeat(page.maxDeliveryAddressLength + 1),
+    });
+
+    await page.confirmOrder();
+
+    expect(page.checkoutForm.controls.customerName.hasError('maxlength')).toBe(true);
+    expect(page.checkoutForm.controls.deliveryAddress.hasError('maxlength')).toBe(true);
+    expect(TestBed.inject(OrderStore).orders()).toEqual([]);
+  });
+
+  it('rejects legacy products that would produce unsafe order amounts', async () => {
+    window.localStorage.setItem(
+      'agrigo.products',
+      JSON.stringify(
+        PRODUCT_SEED.map((product) =>
+          product.id === 'seed-papa'
+            ? { ...product, price: MAX_PRODUCT_PRICE_COP + 1e308 }
+            : product,
+        ),
+      ),
+    );
+    const cartStore = TestBed.inject(CartStore);
+    cartStore.addProduct('seed-papa');
+    const page = TestBed.createComponent(CheckoutPage).componentInstance;
+    fillValidForm(page);
+
+    await page.confirmOrder();
+
+    expect(page.errorMessage()).toContain('precio');
+    expect(TestBed.inject(OrderStore).orders()).toEqual([]);
+    expect(cartStore.quantityFor('seed-papa')).toBe(1);
   });
 });

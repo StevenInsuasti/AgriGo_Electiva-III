@@ -12,6 +12,7 @@ import { OrderStore } from '../services/order.store';
 export class OrderHistoryPage {
   private readonly orderStore = inject(OrderStore);
 
+  readonly loadWarning = this.orderStore.loadWarning;
   readonly orders = computed(() =>
     [...this.orderStore.orders()].sort(
       (first, second) => Date.parse(second.createdAt) - Date.parse(first.createdAt),

@@ -8,7 +8,7 @@ import {
   ValidatorFn,
   Validators,
 } from '@angular/forms';
-import { Product } from '../models/product.model';
+import { MAX_PRODUCT_PRICE_COP, MAX_PRODUCT_STOCK, Product } from '../models/product.model';
 import { ProductStore } from '../services/product.store';
 
 const CURRENT_PRODUCER_NAME = 'Héctor Riascos';
@@ -43,7 +43,7 @@ const httpUrlValidator: ValidatorFn = (control: AbstractControl): ValidationErro
 
 const wholeNumberValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const value = control.value;
-  return value === null || Number.isInteger(Number(value)) ? null : { wholeNumber: true };
+  return value === null || Number.isSafeInteger(Number(value)) ? null : { wholeNumber: true };
 };
 
 @Component({
@@ -56,6 +56,8 @@ export class ProducerPublicationsPage {
   private readonly formBuilder = inject(FormBuilder).nonNullable;
   readonly productStore = inject(ProductStore);
   readonly categories = PRODUCT_CATEGORIES;
+  readonly maxProductPrice = MAX_PRODUCT_PRICE_COP;
+  readonly maxProductStock = MAX_PRODUCT_STOCK;
   readonly currentProducerName = CURRENT_PRODUCER_NAME;
   readonly editingProductId = signal<string | null>(null);
   readonly feedback = signal('');
@@ -65,9 +67,25 @@ export class ProducerPublicationsPage {
     name: ['', [trimmedRequiredValidator, trimmedMinLengthValidator(3)]],
     description: ['', [trimmedRequiredValidator, trimmedMinLengthValidator(8)]],
     category: ['', Validators.required],
-    price: [null as number | null, [Validators.required, Validators.min(0.01)]],
+    price: [
+      null as number | null,
+      [
+        Validators.required,
+        Validators.min(1),
+        Validators.max(MAX_PRODUCT_PRICE_COP),
+        wholeNumberValidator,
+      ],
+    ],
     unit: ['kg', trimmedRequiredValidator],
-    stock: [null as number | null, [Validators.required, Validators.min(0), wholeNumberValidator]],
+    stock: [
+      null as number | null,
+      [
+        Validators.required,
+        Validators.min(1),
+        Validators.max(MAX_PRODUCT_STOCK),
+        wholeNumberValidator,
+      ],
+    ],
     producerName: [CURRENT_PRODUCER_NAME, trimmedRequiredValidator],
     location: ['', trimmedRequiredValidator],
     imageUrl: ['', [trimmedRequiredValidator, httpUrlValidator]],

@@ -97,7 +97,14 @@
 
         <div class="field">
           <label for="product-price">Precio (COP)</label>
-          <input id="product-price" type="number" formControlName="price" min="0.01" step="100" />
+          <input
+            id="product-price"
+            type="number"
+            formControlName="price"
+            min="1"
+            [max]="maxProductPrice"
+            step="1"
+          />
           <small
             class="field-error"
             *ngIf="
@@ -110,7 +117,22 @@
             class="field-error"
             *ngIf="productForm.controls.price.touched && productForm.controls.price.hasError('min')"
           >
-            El precio debe ser mayor que cero.
+            El precio debe ser al menos $1 COP.
+          </small>
+          <small
+            class="field-error"
+            *ngIf="productForm.controls.price.touched && productForm.controls.price.hasError('max')"
+          >
+            El precio no puede superar ${{ maxProductPrice | number }} COP.
+          </small>
+          <small
+            class="field-error"
+            *ngIf="
+              productForm.controls.price.touched &&
+              productForm.controls.price.hasError('wholeNumber')
+            "
+          >
+            Ingresa un precio entero en pesos colombianos.
           </small>
         </div>
 
@@ -134,7 +156,14 @@
 
         <div class="field">
           <label for="product-stock">Cantidad disponible</label>
-          <input id="product-stock" type="number" formControlName="stock" min="0" step="1" />
+          <input
+            id="product-stock"
+            type="number"
+            formControlName="stock"
+            min="1"
+            [max]="maxProductStock"
+            step="1"
+          />
           <small
             class="field-error"
             *ngIf="
@@ -147,7 +176,13 @@
             class="field-error"
             *ngIf="productForm.controls.stock.touched && productForm.controls.stock.hasError('min')"
           >
-            La cantidad no puede ser negativa.
+            La cantidad debe ser al menos 1.
+          </small>
+          <small
+            class="field-error"
+            *ngIf="productForm.controls.stock.touched && productForm.controls.stock.hasError('max')"
+          >
+            La cantidad no puede superar {{ maxProductStock | number }}.
           </small>
           <small
             class="field-error"

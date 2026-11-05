@@ -16,6 +16,7 @@ export class OrderConfirmationPage {
   private readonly orderId = this.route.snapshot.paramMap.get('id');
   private readonly navigationState = this.router.getCurrentNavigation()?.extras.state;
 
+  readonly loadWarning = this.orderStore.loadWarning;
   readonly order = computed(() =>
     this.orderId ? this.orderStore.findOrder(this.orderId) : undefined,
   );
