@@ -22,14 +22,19 @@ export class OrderConfirmationPage {
     const orderId = this.orderId();
     return orderId ? this.orderStore.findOrder(orderId) : undefined;
   });
-  readonly cartClearWarning =
+  readonly cartClearWarning = signal(
     typeof this.navigationState?.['cartClearWarning'] === 'string'
       ? this.navigationState['cartClearWarning']
-      : '';
+      : '',
+  );
 
   constructor() {
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((params) => {
-      this.orderId.set(params.get('id'));
+      const orderId = params.get('id');
+      if (orderId !== this.orderId()) {
+        this.cartClearWarning.set('');
+      }
+      this.orderId.set(orderId);
     });
   }
 }

@@ -11,7 +11,9 @@
       <a class="back-link" routerLink="/mis-pedidos">Ver mis pedidos</a>
     </div>
 
-    <p class="warning-banner" role="alert" *ngIf="cartClearWarning">{{ cartClearWarning }}</p>
+    <p class="warning-banner" role="alert" *ngIf="cartClearWarning()">
+      {{ cartClearWarning() }}
+    </p>
 
     <article class="order-card">
       <div class="order-meta">
