@@ -87,7 +87,7 @@ describe('OrderConfirmationPage', () => {
     expect(compiled.textContent).toContain('Se omitieron pedidos con datos no válidos');
   });
 
-  it('updates the displayed order when the route id changes', () => {
+  it('updates the displayed order and clears an old cart warning when the route id changes', () => {
     const secondOrder: PurchaseOrder = {
       ...savedOrder,
       id: 'order-confirm-2',
@@ -98,12 +98,17 @@ describe('OrderConfirmationPage', () => {
     orderStore.addOrder(secondOrder);
 
     const fixture = TestBed.createComponent(OrderConfirmationPage);
+    fixture.componentInstance.cartClearWarning.set('No se pudo vaciar el carrito.');
     fixture.detectChanges();
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain('¡Gracias, Ana Gómez!');
+    expect((fixture.nativeElement as HTMLElement).textContent).toContain(
+      'No se pudo vaciar el carrito.',
+    );
 
     routeParamMap.next(convertToParamMap({ id: secondOrder.id }));
     fixture.detectChanges();
 
-    expect((fixture.nativeElement as HTMLElement).textContent).toContain('¡Gracias, Carlos Ruiz!');
+    const displayedText = (fixture.nativeElement as HTMLElement).textContent ?? '';
+    expect(displayedText).toContain('¡Gracias, Carlos Ruiz!');
+    expect(displayedText).not.toContain('No se pudo vaciar el carrito.');
   });
 });
