@@ -1,0 +1,141 @@
+.confirmation-page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.page-heading,
+.order-item,
+.total-row {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.page-heading h1,
+.order-card h2,
+.order-item h3,
+.missing-order h1 {
+  color: var(--color-forest);
+  margin: 0.35rem 0;
+}
+
+.page-heading p,
+.order-meta p,
+.order-item p,
+.missing-order > p {
+  color: var(--color-text-muted);
+  margin: 0.4rem 0 0;
+}
+
+.eyebrow {
+  color: var(--color-green);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.back-link {
+  color: var(--color-forest);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.order-card,
+.missing-order {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.order-card {
+  display: grid;
+  gap: 1rem;
+}
+
+.order-meta {
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 1rem;
+}
+
+.item-list {
+  display: grid;
+}
+
+.order-item {
+  border-bottom: 1px solid var(--color-border);
+  padding: 0.75rem 0;
+}
+
+.order-item strong,
+.total-row strong {
+  color: var(--color-forest);
+  white-space: nowrap;
+}
+
+.total-row {
+  border-top: 1px solid var(--color-border);
+  font-size: 1.1rem;
+  margin: 0;
+  padding-top: 1rem;
+}
+
+.demo-note {
+  background: var(--color-green-soft);
+  border-radius: 0.65rem;
+  color: var(--color-forest);
+  margin: 0;
+  padding: 0.75rem 1rem;
+}
+
+.warning-banner {
+  background: var(--color-warning-soft);
+  border: 1px solid #ead9b5;
+  border-radius: 0.65rem;
+  color: var(--color-warning);
+  margin: 0;
+  padding: 0.85rem 1rem;
+}
+
+.primary-button {
+  background: var(--color-forest);
+  border: 0;
+  border-radius: 0.7rem;
+  color: white;
+  display: inline-block;
+  font-weight: 700;
+  padding: 0.85rem 1.1rem;
+  text-decoration: none;
+  width: fit-content;
+}
+
+.primary-button:hover {
+  background: #204b30;
+}
+
+.page-links {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+@media (max-width: 600px) {
+  .page-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .order-item {
+    align-items: flex-start;
+  }
+}

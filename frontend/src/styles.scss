@@ -1,0 +1,48 @@
+:root {
+  color-scheme: light;
+  --color-background: #f7f8f2;
+  --color-surface: #fff;
+  --color-text: #26332a;
+  --color-text-muted: #68756b;
+  --color-forest: #285d3b;
+  --color-green: #4a8b50;
+  --color-green-soft: #edf5e9;
+  --color-border: #e2e8df;
+  --color-warning: #855b19;
+  --color-warning-soft: #fff7e6;
+  --radius-card: 1rem;
+  --shadow-card: 0 8px 24px rgb(34 54 37 / 8%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  min-width: 320px;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button {
+  cursor: pointer;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}

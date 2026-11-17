@@ -1,0 +1,48 @@
+<section class="role-selection">
+  <div class="intro">
+    <p class="eyebrow">Bienvenido a AgriGo</p>
+    <h1>¿Cómo quieres recorrer el mercado?</h1>
+    <p>Selecciona un modo de demostración para ver las funciones de cada participante.</p>
+  </div>
+
+  <p class="error-message" role="alert" *ngIf="roleStore.loadError() || errorMessage()">
+    {{ roleStore.loadError() || errorMessage() }}
+  </p>
+
+  <div class="role-options">
+    <article class="role-card buyer-card">
+      <span class="role-icon" aria-hidden="true">🧺</span>
+      <p class="eyebrow">Para explorar y comprar</p>
+      <h2>Comprador</h2>
+      <p>Busca productos del campo, revisa su detalle y completa un pedido de demostración.</p>
+      <ul>
+        <li>Marketplace y búsqueda</li>
+        <li>Carrito y checkout simulado</li>
+        <li>Confirmación e historial de pedidos</li>
+      </ul>
+      <button type="button" (click)="chooseRole('buyer')">Entrar como comprador</button>
+    </article>
+
+    <article class="role-card producer-card">
+      <span class="role-icon" aria-hidden="true">🌱</span>
+      <p class="eyebrow">Para administrar publicaciones</p>
+      <h2>Productor</h2>
+      <p>
+        En esta demostración usarás el perfil de
+        <strong>Héctor Riascos</strong> para gestionar publicaciones.
+      </p>
+      <ul>
+        <li>Crear productos</li>
+        <li>Editar publicaciones</li>
+        <li>Eliminar productos</li>
+      </ul>
+      <button type="button" (click)="chooseRole('producer')">Entrar como productor</button>
+    </article>
+  </div>
+
+  <aside class="demo-disclaimer" role="note">
+    <strong>Modo académico, no es inicio de sesión.</strong>
+    No hay cuentas ni contraseñas; el modo elegido solo organiza las pantallas y se recuerda en este
+    navegador. Los datos no están protegidos por usuario.
+  </aside>
+</section>
